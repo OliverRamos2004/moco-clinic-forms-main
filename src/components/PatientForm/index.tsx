@@ -16,64 +16,82 @@ export const PatientForm = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({});
   const [activeTab, setActiveTab] = useState("basic");
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ NEW
 
   const updateFormData = (newData: any) => {
     setFormData({ ...formData, ...newData });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    // MAKE CHANGES HERE
     e.preventDefault();
-    console.log("Form Data:", formData);
+    if (isSubmitting) return; // ✅ prevent double clicks
+    setIsSubmitting(true);
+    toast.info("Submitting application...");
 
-    // 1️⃣ Split full name
-    const [firstName = "", lastName = ""] = (formData.legalName || "").split(
-      " "
-    );
+    try {
+      // 1️⃣ Basic validation
+      if (!formData.legalName || !formData.dob) {
+        throw new Error("Missing required fields: name or date of birth");
+      }
 
-    // 2️⃣ Insert into person
-    const { data: personData, error: personError } = await supabase
-      .from("person")
-      .insert([
+      // Split full name safely
+      const [firstName = "", lastName = ""] = (formData.legalName || "").split(
+        " "
+      );
+
+      // 2️⃣ Insert into person
+      const { data: personData, error: personError } = await supabase
+        .from("person")
+        .insert([
+          {
+            legal_first_name: firstName.trim(),
+            legal_last_name: lastName.trim(),
+            preferred_name: formData.preferredName || null,
+            date_of_birth: formData.dob || null,
+            sex_at_birth: formData.gender || null,
+            phone: formData.phone || null,
+            email: formData.email || null,
+          },
+        ])
+        .select("person_id")
+        .single();
+
+      if (personError) throw personError;
+      const person_id = personData.person_id;
+
+      // 3️⃣ Insert address
+      const { error: addressError } = await supabase.from("address").insert([
         {
-          legal_first_name: firstName,
-          legal_last_name: lastName,
-          preferred_name: formData.preferredName || null,
-          date_of_birth: formData.dob || null,
-          sex_at_birth: formData.gender || null,
-          phone: formData.phone || null,
-          emergency_contact: formData.emergencyName || null,
+          street: formData.street || null,
+          city: formData.city || null,
+          zip: formData.zip || null,
+          person_id,
         },
-      ])
-      .select("person_id");
+      ]);
+      if (addressError) throw addressError;
 
-    if (personError) {
-      console.error(personError);
-      return toast.error("Failed to save patient");
+      // 4️⃣ Insert application (insurance/residency)
+      const { error: appError } = await supabase.from("application").insert([
+        {
+          applicant_id: person_id,
+          has_health_insurance: formData.hasInsurance === "yes",
+          montgomery_resident: formData.isResident === "yes",
+          last4_ssn: formData.ssn || null,
+          signature_name: `${firstName} ${lastName}`,
+          signature_date: new Date().toISOString(),
+        },
+      ]);
+      if (appError) throw appError;
+
+      // ✅ Success
+      toast.success("✅ Application submitted successfully!");
+      console.log("Inserted records:", { person_id });
+    } catch (error: any) {
+      console.error("Submission failed:", error.message || error);
+      toast.error(`Failed to submit: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const person_id = personData?.[0]?.person_id;
-
-    // 3️⃣ Insert address
-    await supabase.from("address").insert([
-      {
-        street: formData.street,
-        city: formData.city,
-        zip: formData.zip,
-      },
-    ]);
-
-    // 4️⃣ Insert application (insurance/residency info)
-    await supabase.from("application").insert([
-      {
-        applicant_id: person_id,
-        has_health_insurance: formData.hasInsurance === "yes",
-        montgomery_resident: formData.isResident === "yes",
-        last4_ssn: formData.ssn,
-      },
-    ]);
-
-    toast.success("✅ Application submitted successfully!");
   };
 
   return (
@@ -174,8 +192,13 @@ export const PatientForm = () => {
             </Button>
 
             {activeTab === "lifestyle" ? (
-              <Button type="submit" className="bg-primary">
-                {t("buttons.submit")}
+              <Button
+                type="submit"
+                className="bg-primary"
+                disabled={isSubmitting} // ✅ Disable while submitting
+              >
+                {isSubmitting ? "Submitting..." : t("buttons.submit")}{" "}
+                {/* ✅ Dynamic label */}
               </Button>
             ) : (
               <Button

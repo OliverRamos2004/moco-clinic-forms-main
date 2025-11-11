@@ -1,22 +1,24 @@
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { useEffect } from "react";
-import { supabase } from "./lib/supabaseClient"; // ✅ import Supabase client
+import { PatientsList } from "./pages/PatientsList"; // ✅ your patients page
+import { supabase } from "./lib/supabaseClient"; // ✅ Supabase client
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  // ✅ Run this once when the app loads
+  // Optional: test Supabase connection once
   useEffect(() => {
     const testConnection = async () => {
       try {
         const { data, error } = await supabase
-          .from("patients")
+          .from("person")
           .select("*")
           .limit(1);
         if (error) {
@@ -31,6 +33,7 @@ const App = () => {
     testConnection();
   }, []);
 
+  // ✅ All routes must be inside the <BrowserRouter> and inside the return()
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -39,7 +42,8 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/patients" element={<PatientsList />} />{" "}
+            {/* ✅ added here */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
