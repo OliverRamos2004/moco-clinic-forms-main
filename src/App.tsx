@@ -7,33 +7,29 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { PatientsList } from "./pages/PatientsList"; // ✅ your patients page
-import { supabase } from "./lib/supabaseClient"; // ✅ Supabase client
+import { PatientsList } from "./pages/PatientsList";
+import { supabase } from "./lib/supabaseClient";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Optional: test Supabase connection once
   useEffect(() => {
-    const testConnection = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("person")
-          .select("*")
-          .limit(1);
-        if (error) {
-          console.error("❌ Supabase connection failed:", error.message);
-        } else {
-          console.log("✅ Supabase connection successful:", data);
-        }
-      } catch (err) {
-        console.error("❌ Error testing Supabase connection:", err);
+    const testSupabase = async () => {
+      const { data, error } = await supabase
+        .from("person")
+        .select("*")
+        .limit(1);
+
+      if (error) {
+        console.error("❌ Supabase connection failed:", error.message);
+      } else {
+        console.log("✅ Supabase connection successful:", data);
       }
     };
-    testConnection();
-  }, []);
 
-  // ✅ All routes must be inside the <BrowserRouter> and inside the return()
+    testSupabase();
+  }, []); // ✅ runs once on load
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -42,8 +38,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/patients" element={<PatientsList />} />{" "}
-            {/* ✅ added here */}
+            <Route path="/patients" element={<PatientsList />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
