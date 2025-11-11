@@ -1,78 +1,151 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Header } from './Header';
-import { BasicInfoTab } from './BasicInfoTab';
-import { HealthHistoryTab } from './HealthHistoryTab';
-import { MedicalHistoryTab } from './MedicalHistoryTab';
-import { FamilyHistoryTab } from './FamilyHistoryTab';
-import { LifestyleTab } from './LifestyleTab';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Header } from "./Header";
+import { BasicInfoTab } from "./BasicInfoTab";
+import { HealthHistoryTab } from "./HealthHistoryTab";
+import { MedicalHistoryTab } from "./MedicalHistoryTab";
+import { FamilyHistoryTab } from "./FamilyHistoryTab";
+import { LifestyleTab } from "./LifestyleTab";
+import { toast } from "sonner";
+import { supabase } from "@/lib/supabaseClient";
 
 export const PatientForm = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({});
-  const [activeTab, setActiveTab] = useState('basic');
+  const [activeTab, setActiveTab] = useState("basic");
 
   const updateFormData = (newData: any) => {
     setFormData({ ...formData, ...newData });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    // MAKE CHANGES HERE
     e.preventDefault();
-    console.log('Form Data:', formData);
-    toast.success('Application submitted successfully!', {
-      description: 'Check console for form data.'
-    });
+    console.log("Form Data:", formData);
+
+    // 1️⃣ Split full name
+    const [firstName = "", lastName = ""] = (formData.legalName || "").split(
+      " "
+    );
+
+    // 2️⃣ Insert into person
+    const { data: personData, error: personError } = await supabase
+      .from("person")
+      .insert([
+        {
+          legal_first_name: firstName,
+          legal_last_name: lastName,
+          preferred_name: formData.preferredName || null,
+          date_of_birth: formData.dob || null,
+          sex_at_birth: formData.gender || null,
+          phone: formData.phone || null,
+          emergency_contact: formData.emergencyName || null,
+        },
+      ])
+      .select("person_id");
+
+    if (personError) {
+      console.error(personError);
+      return toast.error("Failed to save patient");
+    }
+
+    const person_id = personData?.[0]?.person_id;
+
+    // 3️⃣ Insert address
+    await supabase.from("address").insert([
+      {
+        street: formData.street,
+        city: formData.city,
+        zip: formData.zip,
+      },
+    ]);
+
+    // 4️⃣ Insert application (insurance/residency info)
+    await supabase.from("application").insert([
+      {
+        applicant_id: person_id,
+        has_health_insurance: formData.hasInsurance === "yes",
+        montgomery_resident: formData.isResident === "yes",
+        last4_ssn: formData.ssn,
+      },
+    ]);
+
+    toast.success("✅ Application submitted successfully!");
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <form onSubmit={handleSubmit}>
           <Card className="shadow-lg">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
               <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto">
                 <TabsTrigger value="basic" className="text-xs md:text-sm py-2">
-                  {t('tabs.basic')}
+                  {t("tabs.basic")}
                 </TabsTrigger>
                 <TabsTrigger value="health" className="text-xs md:text-sm py-2">
-                  {t('tabs.health')}
+                  {t("tabs.health")}
                 </TabsTrigger>
-                <TabsTrigger value="medical" className="text-xs md:text-sm py-2">
-                  {t('tabs.medical')}
+                <TabsTrigger
+                  value="medical"
+                  className="text-xs md:text-sm py-2"
+                >
+                  {t("tabs.medical")}
                 </TabsTrigger>
                 <TabsTrigger value="family" className="text-xs md:text-sm py-2">
-                  {t('tabs.family')}
+                  {t("tabs.family")}
                 </TabsTrigger>
-                <TabsTrigger value="lifestyle" className="text-xs md:text-sm py-2">
-                  {t('tabs.lifestyle')}
+                <TabsTrigger
+                  value="lifestyle"
+                  className="text-xs md:text-sm py-2"
+                >
+                  {t("tabs.lifestyle")}
                 </TabsTrigger>
               </TabsList>
 
               <div className="p-6">
                 <TabsContent value="basic">
-                  <BasicInfoTab formData={formData} updateFormData={updateFormData} />
+                  <BasicInfoTab
+                    formData={formData}
+                    updateFormData={updateFormData}
+                  />
                 </TabsContent>
 
                 <TabsContent value="health">
-                  <HealthHistoryTab formData={formData} updateFormData={updateFormData} />
+                  <HealthHistoryTab
+                    formData={formData}
+                    updateFormData={updateFormData}
+                  />
                 </TabsContent>
 
                 <TabsContent value="medical">
-                  <MedicalHistoryTab formData={formData} updateFormData={updateFormData} />
+                  <MedicalHistoryTab
+                    formData={formData}
+                    updateFormData={updateFormData}
+                  />
                 </TabsContent>
 
                 <TabsContent value="family">
-                  <FamilyHistoryTab formData={formData} updateFormData={updateFormData} />
+                  <FamilyHistoryTab
+                    formData={formData}
+                    updateFormData={updateFormData}
+                  />
                 </TabsContent>
 
                 <TabsContent value="lifestyle">
-                  <LifestyleTab formData={formData} updateFormData={updateFormData} />
+                  <LifestyleTab
+                    formData={formData}
+                    updateFormData={updateFormData}
+                  />
                 </TabsContent>
               </div>
             </Tabs>
@@ -83,33 +156,45 @@ export const PatientForm = () => {
               type="button"
               variant="outline"
               onClick={() => {
-                const tabs = ['basic', 'health', 'medical', 'family', 'lifestyle'];
+                const tabs = [
+                  "basic",
+                  "health",
+                  "medical",
+                  "family",
+                  "lifestyle",
+                ];
                 const currentIndex = tabs.indexOf(activeTab);
                 if (currentIndex > 0) {
                   setActiveTab(tabs[currentIndex - 1]);
                 }
               }}
-              disabled={activeTab === 'basic'}
+              disabled={activeTab === "basic"}
             >
-              {t('buttons.previous')}
+              {t("buttons.previous")}
             </Button>
 
-            {activeTab === 'lifestyle' ? (
+            {activeTab === "lifestyle" ? (
               <Button type="submit" className="bg-primary">
-                {t('buttons.submit')}
+                {t("buttons.submit")}
               </Button>
             ) : (
               <Button
                 type="button"
                 onClick={() => {
-                  const tabs = ['basic', 'health', 'medical', 'family', 'lifestyle'];
+                  const tabs = [
+                    "basic",
+                    "health",
+                    "medical",
+                    "family",
+                    "lifestyle",
+                  ];
                   const currentIndex = tabs.indexOf(activeTab);
                   if (currentIndex < tabs.length - 1) {
                     setActiveTab(tabs[currentIndex + 1]);
                   }
                 }}
               >
-                {t('buttons.next')}
+                {t("buttons.next")}
               </Button>
             )}
           </div>
