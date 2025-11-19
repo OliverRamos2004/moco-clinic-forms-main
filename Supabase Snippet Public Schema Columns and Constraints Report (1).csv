@@ -1,0 +1,216 @@
+table_name,column_name,data_type,is_nullable,column_default
+address,address_id,integer,NO,null
+address,street,character varying,YES,null
+address,city,character varying,YES,null
+address,state,character varying,YES,null
+address,zip,character varying,YES,null
+address,created_at,timestamp with time zone,NO,now()
+address,updated_at,timestamp with time zone,NO,now()
+address,person_id,integer,YES,null
+allergy,allergy_id,integer,NO,null
+allergy,intake_id,integer,NO,null
+allergy,allergen,character varying,YES,null
+allergy,reaction,character varying,YES,null
+application,application_id,integer,NO,null
+application,applicant_id,integer,NO,null
+application,created_at,timestamp with time zone,NO,now()
+application,updated_at,timestamp with time zone,NO,now()
+application,status,character varying,NO,'draft'::character varying
+application,montgomery_resident,boolean,YES,null
+application,has_health_insurance,boolean,YES,null
+application,last4_ssn,character varying,YES,null
+application,domicile_address_id,integer,YES,null
+application,signature_name,character varying,YES,null
+application,signature_date,date,YES,null
+application_household_link,application_id,integer,NO,null
+application_household_link,household_id,integer,NO,null
+application_household_link,created_at,timestamp with time zone,NO,now()
+condition_lookup,condition_id,integer,NO,null
+condition_lookup,name,character varying,NO,null
+dental_history,intake_id,integer,NO,null
+dental_history,regular_checkups,boolean,YES,null
+dental_history,gums_bleed,boolean,YES,null
+dental_history,periodontal_disease,boolean,YES,null
+dental_history,grind_teeth,boolean,YES,null
+dental_history,wore_braces,boolean,YES,null
+dental_history,current_mouth_pain,boolean,YES,null
+dental_history,brushing_per_day,integer,YES,null
+dental_history,floss,boolean,YES,null
+dental_history,floss_how_often,character varying,YES,null
+dental_history,face_mouth_trauma,boolean,YES,null
+dental_history,trauma_when,character varying,YES,null
+dental_history,dentures_partials,boolean,YES,null
+dental_history,dentures_age,character varying,YES,null
+dental_history,last_exam_cleaning,date,YES,null
+emergency_contact,contact_id,integer,NO,null
+emergency_contact,person_id,integer,NO,null
+emergency_contact,name,character varying,NO,null
+emergency_contact,relationship,character varying,YES,null
+emergency_contact,phone,character varying,YES,null
+family_history,fam_hist_id,integer,NO,null
+family_history,intake_id,integer,NO,null
+family_history,relation,character varying,YES,null
+family_history,alive,boolean,YES,null
+family_history,age,integer,YES,null
+family_history_problem,fam_hist_id,integer,NO,null
+family_history_problem,problem_id,integer,NO,null
+family_problem_lookup,problem_id,integer,NO,null
+family_problem_lookup,name,character varying,NO,null
+female_history,intake_id,integer,NO,null
+female_history,last_pap_date,date,YES,null
+female_history,pap_abnormal,boolean,YES,null
+female_history,last_mammogram_date,date,YES,null
+female_history,mammogram_abnormal,boolean,YES,null
+female_history,age_first_menstrual_period,integer,YES,null
+female_history,date_last_menstrual_period,date,YES,null
+female_history,pregnancies,integer,YES,null
+female_history,births,integer,YES,null
+female_history,abortions,integer,YES,null
+female_history,miscarriages,integer,YES,null
+female_history,cesarean_count,integer,YES,null
+female_history,heavy_periods,boolean,YES,null
+female_history,bleeding_between_periods,boolean,YES,null
+female_history,extreme_menstrual_pain,boolean,YES,null
+female_history,vaginal_itching_burning_discharge,boolean,YES,null
+female_history,urine_leak,boolean,YES,null
+female_history,hot_flashes,boolean,YES,null
+female_history,menopause,boolean,YES,null
+female_history,breast_lump_or_nipple_discharge,boolean,YES,null
+female_history,painful_intercourse,boolean,YES,null
+female_history,partner_uses_condom,boolean,YES,null
+female_history,other_birth_control_method,character varying,YES,null
+female_history,waking_at_night_to_urinate,boolean,YES,null
+fpl_threshold,year,integer,NO,null
+fpl_threshold,household_size,integer,NO,null
+fpl_threshold,gross_income_less_than,numeric,NO,null
+guardian_relationship,guardian_person_id,integer,NO,null
+guardian_relationship,minor_person_id,integer,NO,null
+guardian_relationship,start_date,date,YES,null
+guardian_relationship,end_date,date,YES,null
+household,household_id,integer,NO,null
+household,primary_contact_id,integer,YES,null
+household,created_at,timestamp with time zone,NO,now()
+household,updated_at,timestamp with time zone,NO,now()
+household_member,household_id,integer,NO,null
+household_member,person_id,integer,NO,null
+household_member,relationship_to_primary,character varying,NO,null
+household_member,start_date,date,YES,null
+household_member,end_date,date,YES,null
+household_member,created_at,timestamp with time zone,NO,now()
+household_member,updated_at,timestamp with time zone,NO,now()
+income_verification,income_id,integer,NO,null
+income_verification,application_id,integer,NO,null
+income_verification,adult_person_id,integer,NO,null
+income_verification,type,character varying,YES,null
+income_verification,gross_annual_amount,numeric,YES,null
+income_verification,period,character varying,YES,null
+income_verification,document_url,character varying,YES,null
+income_verification,verified_by_staff_id,integer,YES,null
+income_verification,verified_at,timestamp with time zone,YES,null
+intake,intake_id,integer,NO,null
+intake,application_id,integer,NO,null
+intake,main_reason_for_visit,text,YES,null
+intake,other_concerns,text,YES,null
+intake,preferred_pharmacy,character varying,YES,null
+intake,pharmacy_phone,character varying,YES,null
+intake,immunizations_current,character varying,YES,null
+intake,created_at,timestamp with time zone,NO,now()
+intake,updated_at,timestamp with time zone,NO,now()
+intake_condition,intake_id,integer,NO,null
+intake_condition,condition_id,integer,NO,null
+intake_condition,notes,text,YES,null
+male_history,intake_id,integer,NO,null
+male_history,penile_discharge,boolean,YES,null
+male_history,penile_lesions,boolean,YES,null
+male_history,erection_difficulty,boolean,YES,null
+male_history,trouble_urinating,boolean,YES,null
+male_history,waking_at_night_to_urinate,boolean,YES,null
+medication,medication_id,integer,NO,null
+medication,intake_id,integer,NO,null
+medication,drug_name,character varying,YES,null
+medication,strength,character varying,YES,null
+medication,frequency,character varying,YES,null
+nutrition_history,intake_id,integer,NO,null
+nutrition_history,dieting,character varying,YES,null
+nutrition_history,salt_intake,character varying,YES,null
+nutrition_history,fruit_servings_per_day,integer,YES,null
+nutrition_history,vegetable_servings_per_day,integer,YES,null
+nutrition_history,protein_sources,character varying,YES,null
+nutrition_history,sugar_intake,character varying,YES,null
+nutrition_history,weight_stability,character varying,YES,null
+nutrition_history,food_intolerances_allergies,text,YES,null
+nutrition_history,meals_per_day,integer,YES,null
+nutrition_history,other_fluids,character varying,YES,null
+nutrition_history,water_per_day,integer,YES,null
+nutrition_history,additional_notes,text,YES,null
+past_med_history_event,event_id,integer,NO,null
+past_med_history_event,intake_id,integer,NO,null
+past_med_history_event,type,character varying,YES,null
+past_med_history_event,description,character varying,YES,null
+past_med_history_event,year,integer,YES,null
+past_med_history_event,hospital,character varying,YES,null
+person,person_id,integer,NO,null
+person,legal_first_name,character varying,NO,null
+person,legal_last_name,character varying,NO,null
+person,preferred_name,character varying,YES,null
+person,date_of_birth,date,YES,null
+person,sex_at_birth,character varying,YES,null
+person,phone,character varying,YES,null
+person,email,character varying,YES,null
+person,created_at,timestamp with time zone,NO,now()
+person,updated_at,timestamp with time zone,NO,now()
+person,insurance_provider,character varying,YES,null
+person,emergency_contact,character varying,YES,null
+person_address,person_id,integer,NO,null
+person_address,address_id,integer,NO,null
+person_address,is_current,boolean,YES,TRUE
+person_address,since_date,date,YES,null
+person_address,created_at,timestamp with time zone,NO,now()
+person_address,updated_at,timestamp with time zone,NO,now()
+residency_verification,residency_id,integer,NO,null
+residency_verification,application_id,integer,NO,null
+residency_verification,type,character varying,YES,null
+residency_verification,document_url,character varying,YES,null
+residency_verification,verified_by_staff_id,integer,YES,null
+residency_verification,verified_at,timestamp with time zone,YES,null
+sexual_history,intake_id,integer,NO,null
+sexual_history,uses_condom,boolean,YES,null
+sexual_history,number_of_sex_partners_total,integer,YES,null
+sexual_history,current_partner_gender,character varying,YES,null
+sexual_history,screened_for_sti,boolean,YES,null
+sexual_history,interested_in_sti_screen,boolean,YES,null
+social_history,intake_id,integer,NO,null
+social_history,caffeine_level,character varying,YES,null
+social_history,caffeine_cups_per_day,integer,YES,null
+social_history,alcohol_use,character varying,YES,null
+social_history,drinks_per_week_beer,integer,YES,null
+social_history,drinks_per_week_wine,integer,YES,null
+social_history,drinks_per_week_liquor,integer,YES,null
+social_history,cage_cut_down,boolean,YES,null
+social_history,cage_annoyed,boolean,YES,null
+social_history,cage_guilty,boolean,YES,null
+social_history,cage_eye_opener,boolean,YES,null
+social_history,tobacco_current,boolean,YES,null
+social_history,cigarettes_packs_per_day,numeric,YES,null
+social_history,chew_per_day,integer,YES,null
+social_history,cigars_per_day,integer,YES,null
+social_history,vape_per_day,integer,YES,null
+social_history,tobacco_started_age,integer,YES,null
+social_history,tobacco_ever,boolean,YES,null
+social_history,tobacco_quit_years_ago,integer,YES,null
+social_history,drugs_current,boolean,YES,null
+social_history,drugs_list_amounts,text,YES,null
+staff_user,staff_id,integer,NO,null
+staff_user,name,character varying,NO,null
+staff_user,email,character varying,YES,null
+staff_user,role,character varying,YES,null
+staff_user,created_at,timestamp with time zone,NO,now()
+staff_user,updated_at,timestamp with time zone,NO,now()
+sti_interest,intake_id,integer,NO,null
+sti_interest,sti,character varying,NO,null
+tb_screening,intake_id,integer,NO,null
+tb_screening,active_tb,boolean,YES,null
+tb_screening,cough_gt_3_weeks,boolean,YES,null
+tb_screening,cough_produces_blood,boolean,YES,null
+tb_screening,exposed_to_tb,boolean,YES,null
+tb_screening,traveled_outside_usa_past_12m,boolean,YES,null

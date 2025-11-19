@@ -39,6 +39,8 @@ export const PatientsList = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Person | null>(null);
 
+  // JOIN
+
   useEffect(() => {
     const fetchPatients = async () => {
       try {
@@ -46,15 +48,23 @@ export const PatientsList = () => {
           .from("person")
           .select(
             `
-            person_id,
-            legal_first_name,
-            legal_last_name,
-            date_of_birth,
-            phone,
-            email,
-            address:address!address_person_id_fkey(street, city, zip),
-            application:application!application_applicant_id_fkey(has_health_insurance, montgomery_resident, last4_ssn)
-          `
+          person_id,
+          legal_first_name,
+          legal_last_name,
+          date_of_birth,
+          phone,
+          email,
+
+          address:address!address_person_id_fkey (
+            street,
+            city,
+            zip
+          ),
+
+          application (
+            has_health_insurance
+          )
+        `
           )
           .order("person_id", { ascending: false });
 
@@ -62,7 +72,7 @@ export const PatientsList = () => {
 
         console.log("✅ Patients fetched:", data);
         setPatients(data || []);
-      } catch (err: any) {
+      } catch (err) {
         console.error("❌ Fetch failed:", err);
         setError("Failed to fetch patients");
         toast.error("Failed to load patients");
@@ -106,21 +116,27 @@ export const PatientsList = () => {
                     <td className="p-2 border-b">{p.legal_last_name}</td>
                     <td className="p-2 border-b">{p.date_of_birth}</td>
                     <td className="p-2 border-b">{p.phone}</td>
+
+                    {/* Address */}
                     <td className="p-2 border-b">
                       {p.address?.[0]
                         ? `${p.address[0].street}, ${p.address[0].city}`
                         : "—"}
                     </td>
+
+                    {/* Has Insurance */}
                     <td className="p-2 border-b">
                       {p.application?.[0]?.has_health_insurance ? "Yes" : "No"}
                     </td>
+
+                    {/* View Button */}
                     <td className="p-2 border-b text-center">
                       <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedPatient(p)}
+                        onClick={() => {
+                          window.location.href = `/patients/${p.person_id}`;
+                        }}
                       >
-                        View Details
+                        View
                       </Button>
                     </td>
                   </tr>
@@ -140,48 +156,102 @@ export const PatientsList = () => {
         open={!!selectedPatient}
         onOpenChange={() => setSelectedPatient(null)}
       >
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="max-w-2xl p-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-xl font-semibold">
               {selectedPatient
                 ? `${selectedPatient.legal_first_name} ${selectedPatient.legal_last_name}`
                 : "Patient Details"}
             </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Patient ID: {selectedPatient?.person_id}
+            </p>
           </DialogHeader>
 
           {selectedPatient && (
-            <div className="space-y-2 text-sm">
-              <p>
-                <strong>Date of Birth:</strong> {selectedPatient.date_of_birth}
-              </p>
-              <p>
-                <strong>Phone:</strong> {selectedPatient.phone}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedPatient.email || "—"}
-              </p>
-              <p>
-                <strong>Address:</strong>{" "}
-                {selectedPatient.address?.[0]
-                  ? `${selectedPatient.address[0].street}, ${selectedPatient.address[0].city}, ${selectedPatient.address[0].zip}`
-                  : "No address on file"}
-              </p>
-              <p>
-                <strong>Has Insurance:</strong>{" "}
-                {selectedPatient.application?.[0]?.has_health_insurance
-                  ? "Yes"
-                  : "No"}
-              </p>
-              <p>
-                <strong>Montgomery Resident:</strong>{" "}
-                {selectedPatient.application?.[0]?.montgomery_resident
-                  ? "Yes"
-                  : "No"}
-              </p>
-              <p>
-                <strong>Last 4 of SSN:</strong>{" "}
-                {selectedPatient.application?.[0]?.last4_ssn || "—"}
-              </p>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              {/* LEFT COLUMN */}
+              <div>
+                <h3 className="text-md font-semibold mb-2 border-b pb-1">
+                  Personal Information
+                </h3>
+                <p>
+                  <span className="font-medium">First Name:</span>{" "}
+                  {selectedPatient.legal_first_name}
+                </p>
+                <p>
+                  <span className="font-medium">Last Name:</span>{" "}
+                  {selectedPatient.legal_last_name}
+                </p>
+                <p>
+                  <span className="font-medium">Date of Birth:</span>{" "}
+                  {selectedPatient.date_of_birth}
+                </p>
+                <p>
+                  <span className="font-medium">Phone:</span>{" "}
+                  {selectedPatient.phone}
+                </p>
+                <p>
+                  <span className="font-medium">Email:</span>{" "}
+                  {selectedPatient.email || "—"}
+                </p>
+              </div>
+
+              {/* RIGHT COLUMN */}
+              <div>
+                <h3 className="text-md font-semibold mb-2 border-b pb-1">
+                  Address
+                </h3>
+                {selectedPatient.address?.[0] ? (
+                  <>
+                    <p>
+                      <span className="font-medium">Street:</span>{" "}
+                      {selectedPatient.address[0].street}
+                    </p>
+                    <p>
+                      <span className="font-medium">City:</span>{" "}
+                      {selectedPatient.address[0].city}
+                    </p>
+                    <p>
+                      <span className="font-medium">Zip:</span>{" "}
+                      {selectedPatient.address[0].zip}
+                    </p>
+                  </>
+                ) : (
+                  <p>No address on file</p>
+                )}
+              </div>
+
+              {/* FULL-WIDTH SECTION */}
+              <div className="col-span-2 mt-4">
+                <h3 className="text-md font-semibold mb-2 border-b pb-1">
+                  Application Information
+                </h3>
+                {selectedPatient.application?.[0] ? (
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                    <p>
+                      <span className="font-semibold">Has Insurance:</span>{" "}
+                      {selectedPatient.application[0].has_health_insurance
+                        ? "Yes"
+                        : "No"}
+                    </p>
+                    <p>
+                      <span className="font-semibold">
+                        Montgomery Resident:
+                      </span>{" "}
+                      {selectedPatient.application[0].montgomery_resident
+                        ? "Yes"
+                        : "No"}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Last 4 SSN:</span>{" "}
+                      {selectedPatient.application[0].last4_ssn || "—"}
+                    </p>
+                  </div>
+                ) : (
+                  <p>No application information available</p>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>

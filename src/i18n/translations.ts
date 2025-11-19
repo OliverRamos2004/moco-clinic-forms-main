@@ -3,14 +3,14 @@ export const translations = {
     header: {
       title: "Montgomery County Free Clinic",
       subtitle: "New Patient Application",
-      language: "Español"
+      language: "Español",
     },
     tabs: {
       basic: "Basic Info",
       health: "Health History",
       medical: "Medical History",
       family: "Family History",
-      lifestyle: "Lifestyle & Nutrition"
+      lifestyle: "Lifestyle & Nutrition",
     },
     basicInfo: {
       adult: "Adult Information (Age 18+)",
@@ -27,6 +27,8 @@ export const translations = {
       female: "Female",
       other: "Other",
       phone: "Phone Number",
+      firstName: "First Name",
+      lastName: "Last Name",
       minors: "Minors (Age 14-17)",
       minorsNote: "You must be the legal guardian for each minor listed below",
       addMinor: "Add Minor",
@@ -34,7 +36,7 @@ export const translations = {
       emergency: "Emergency Contact",
       emergencyName: "Name",
       relationship: "Relationship",
-      emergencyPhone: "Phone Number"
+      emergencyPhone: "Phone Number",
     },
     insurance: {
       hasInsurance: "Do you or your children currently have health insurance?",
@@ -42,29 +44,34 @@ export const translations = {
       yes: "Yes",
       no: "No",
       residencyProof: "Please provide proof of residency",
-      residencyNote: "Must contain applicant's or spouse's name and physical address",
+      residencyNote:
+        "Must contain applicant's or spouse's name and physical address",
       uploadDoc: "Upload Document",
       incomeTitle: "Household Income Verification",
-      incomeQuestion: "Is your household income less than 300% of the Federal Poverty Level?",
+      incomeQuestion:
+        "Is your household income less than 300% of the Federal Poverty Level?",
       householdSize: "Household Size",
       grossIncome: "Gross Income",
       incomeProof: "Upload proof of income",
       signature: "Signature",
       printName: "Print Name",
       date: "Date",
-      affirmation: "I swear or affirm that all the information submitted in this application is true and accurate."
+      affirmation:
+        "I swear or affirm that all the information submitted in this application is true and accurate.",
     },
     health: {
       patientName: "Patient Name",
       mainReason: "Main reason for today's visit",
       otherConcerns: "Other concerns",
       allergies: "Allergies",
-      allergiesNote: "List anything that you are allergic to (medications, anesthetics, food, bee stings, etc.) and how each affects you",
+      allergiesNote:
+        "List anything that you are allergic to (medications, anesthetics, food, bee stings, etc.) and how each affects you",
       allergyName: "Allergy",
       reaction: "Reaction",
       addAllergy: "Add Allergy",
       medications: "Current Medications",
-      medicationsNote: "Please list all medications you are taking. Include prescribed drugs and over-the-counter drugs, such as vitamins and inhalants",
+      medicationsNote:
+        "Please list all medications you are taking. Include prescribed drugs and over-the-counter drugs, such as vitamins and inhalants",
       drug: "Drug",
       strength: "Strength",
       frequency: "Frequency",
@@ -72,7 +79,7 @@ export const translations = {
       pharmacy: "Preferred Pharmacy",
       pharmacyPhone: "Pharmacy Phone",
       immunizations: "Immunizations Current?",
-      dontKnow: "Don't Know"
+      dontKnow: "Don't Know",
     },
     medical: {
       past: "Past Medical History",
@@ -91,7 +98,7 @@ export const translations = {
       persistentCough: "Do you have a persistent cough > 3 weeks duration?",
       bloodyMucus: "Do you have a cough that produces blood?",
       exposedTB: "Have you been exposed to anyone with tuberculosis?",
-      traveledUSA: "Have you traveled out of the USA this past 12 months?"
+      traveledUSA: "Have you traveled out of the USA this past 12 months?",
     },
     family: {
       title: "Family Health History",
@@ -109,7 +116,7 @@ export const translations = {
       osteoporosis: "Osteoporosis",
       stroke: "Stroke",
       suicide: "Suicide",
-      addMember: "Add Family Member"
+      addMember: "Add Family Member",
     },
     dental: {
       title: "Patient Dental History",
@@ -123,7 +130,7 @@ export const translations = {
       floss: "Do you floss?",
       howOften: "How often?",
       lastCleaning: "When was your last dental exam/cleaning?",
-      trauma: "Have you had any trauma to your face or mouth?"
+      trauma: "Have you had any trauma to your face or mouth?",
     },
     sexual: {
       title: "Sexual History",
@@ -135,13 +142,14 @@ export const translations = {
       femaleOnly: "Female",
       both: "Male and Female (Both)",
       screenedSTI: "Have you been screened for sexual infection?",
-      interestedScreening: "Interested in being screened for sexual infection? Check below:",
+      interestedScreening:
+        "Interested in being screened for sexual infection? Check below:",
       gonorrhea: "Gonorrhea",
       chlamydia: "Chlamydia",
       herpes: "Herpes",
       genitalWarts: "Genital Warts",
       hiv: "HIV",
-      hepBC: "Hep B,C"
+      hepBC: "Hep B,C",
     },
     social: {
       title: "Social History",
@@ -163,7 +171,8 @@ export const translations = {
       cutDown: "Have you ever felt you should cut down on your drinking?",
       annoyed: "Have people annoyed you by criticizing your drinking?",
       guilty: "Have you ever felt bad or guilty about your drinking?",
-      morning: "Have you ever had a drink first thing in the morning to steady your nerves or to get rid of a hangover?",
+      morning:
+        "Have you ever had a drink first thing in the morning to steady your nerves or to get rid of a hangover?",
       tobacco: "Tobacco",
       useTobacco: "Do you use tobacco?",
       howOld: "If yes, how old were you when you started smoking?",
@@ -176,7 +185,7 @@ export const translations = {
       yearsAgoQuit: "If yes, how many years ago did you quit?",
       drugs: "Drugs",
       useRecreational: "Do you currently use recreational or street drugs?",
-      listDrugs: "If yes, list and amounts used"
+      listDrugs: "If yes, list and amounts used",
     },
     nutrition: {
       title: "Nutrition History",
@@ -194,7 +203,8 @@ export const translations = {
       mealsPerDay: "Meals per day",
       waterPerDay: "Water per day",
       fluids: "Fluids (coffee, tea, soda)",
-      additionalInfo: "Please add any other information about your health that you would like your provider to know here"
+      additionalInfo:
+        "Please add any other information about your health that you would like your provider to know here",
     },
     genderSpecific: {
       maleOnly: "Male Only",
@@ -222,27 +232,27 @@ export const translations = {
       breastLump: "Breast lump or nipple discharge",
       painfulIntercourse: "Painful intercourse",
       useCondoms: "Do you use condoms?",
-      birthControl: "Other birth control method used"
+      birthControl: "Other birth control method used",
     },
     buttons: {
       next: "Next",
       previous: "Previous",
       submit: "Submit Application",
-      remove: "Remove"
-    }
+      remove: "Remove",
+    },
   },
   es: {
     header: {
       title: "Clínica Gratuita del Condado de Montgomery",
       subtitle: "Solicitud de Nuevo Paciente",
-      language: "English"
+      language: "English",
     },
     tabs: {
       basic: "Información Básica",
       health: "Historial de Salud",
       medical: "Historial Médico",
       family: "Historial Familiar",
-      lifestyle: "Estilo de Vida y Nutrición"
+      lifestyle: "Estilo de Vida y Nutrición",
     },
     basicInfo: {
       adult: "Información del Adulto (18+ años)",
@@ -259,6 +269,8 @@ export const translations = {
       female: "Femenino",
       other: "Otro",
       phone: "Número de Teléfono",
+      firstName: "Nombre",
+      lastName: "Apellido",
       minors: "Menores (14-17 años)",
       minorsNote: "Debe ser el tutor legal de cada menor listado",
       addMinor: "Agregar Menor",
@@ -266,7 +278,7 @@ export const translations = {
       emergency: "Contacto de Emergencia",
       emergencyName: "Nombre",
       relationship: "Relación",
-      emergencyPhone: "Número de Teléfono"
+      emergencyPhone: "Número de Teléfono",
     },
     insurance: {
       hasInsurance: "¿Usted o sus hijos tienen seguro médico actualmente?",
@@ -274,29 +286,34 @@ export const translations = {
       yes: "Sí",
       no: "No",
       residencyProof: "Por favor proporcione prueba de residencia",
-      residencyNote: "Debe contener el nombre y dirección física del solicitante o cónyuge",
+      residencyNote:
+        "Debe contener el nombre y dirección física del solicitante o cónyuge",
       uploadDoc: "Subir Documento",
       incomeTitle: "Verificación de Ingresos del Hogar",
-      incomeQuestion: "¿Su ingreso familiar es menos del 300% del Nivel Federal de Pobreza?",
+      incomeQuestion:
+        "¿Su ingreso familiar es menos del 300% del Nivel Federal de Pobreza?",
       householdSize: "Tamaño del Hogar",
       grossIncome: "Ingreso Bruto",
       incomeProof: "Subir comprobante de ingresos",
       signature: "Firma",
       printName: "Nombre en Letra de Molde",
       date: "Fecha",
-      affirmation: "Juro o afirmo que toda la información enviada en esta solicitud es verdadera y precisa."
+      affirmation:
+        "Juro o afirmo que toda la información enviada en esta solicitud es verdadera y precisa.",
     },
     health: {
       patientName: "Nombre del Paciente",
       mainReason: "Razón principal de la visita de hoy",
       otherConcerns: "Otras preocupaciones",
       allergies: "Alergias",
-      allergiesNote: "Liste cualquier cosa a la que sea alérgico (medicamentos, anestésicos, alimentos, picaduras de abeja, etc.) y cómo le afecta",
+      allergiesNote:
+        "Liste cualquier cosa a la que sea alérgico (medicamentos, anestésicos, alimentos, picaduras de abeja, etc.) y cómo le afecta",
       allergyName: "Alergia",
       reaction: "Reacción",
       addAllergy: "Agregar Alergia",
       medications: "Medicamentos Actuales",
-      medicationsNote: "Por favor liste todos los medicamentos que está tomando. Incluya medicamentos recetados y de venta libre, como vitaminas e inhaladores",
+      medicationsNote:
+        "Por favor liste todos los medicamentos que está tomando. Incluya medicamentos recetados y de venta libre, como vitaminas e inhaladores",
       drug: "Medicamento",
       strength: "Dosis",
       frequency: "Frecuencia",
@@ -304,7 +321,7 @@ export const translations = {
       pharmacy: "Farmacia Preferida",
       pharmacyPhone: "Teléfono de Farmacia",
       immunizations: "¿Vacunas al día?",
-      dontKnow: "No Sé"
+      dontKnow: "No Sé",
     },
     medical: {
       past: "Historial Médico Pasado",
@@ -323,7 +340,7 @@ export const translations = {
       persistentCough: "¿Tiene tos persistente > 3 semanas?",
       bloodyMucus: "¿Tiene tos que produce sangre?",
       exposedTB: "¿Ha estado expuesto a alguien con tuberculosis?",
-      traveledUSA: "¿Ha viajado fuera de EE.UU. en los últimos 12 meses?"
+      traveledUSA: "¿Ha viajado fuera de EE.UU. en los últimos 12 meses?",
     },
     family: {
       title: "Historial de Salud Familiar",
@@ -341,7 +358,7 @@ export const translations = {
       osteoporosis: "Osteoporosis",
       stroke: "Derrame Cerebral",
       suicide: "Suicidio",
-      addMember: "Agregar Miembro Familiar"
+      addMember: "Agregar Miembro Familiar",
     },
     dental: {
       title: "Historial Dental del Paciente",
@@ -355,7 +372,7 @@ export const translations = {
       floss: "¿Usa hilo dental?",
       howOften: "¿Con qué frecuencia?",
       lastCleaning: "¿Cuándo fue su último examen/limpieza dental?",
-      trauma: "¿Ha tenido algún trauma en su cara o boca?"
+      trauma: "¿Ha tenido algún trauma en su cara o boca?",
     },
     sexual: {
       title: "Historial Sexual",
@@ -367,13 +384,14 @@ export const translations = {
       femaleOnly: "Femenino",
       both: "Masculino y Femenino (Ambos)",
       screenedSTI: "¿Ha sido evaluado para infecciones sexuales?",
-      interestedScreening: "¿Interesado en ser evaluado para infecciones sexuales? Marque a continuación:",
+      interestedScreening:
+        "¿Interesado en ser evaluado para infecciones sexuales? Marque a continuación:",
       gonorrhea: "Gonorrea",
       chlamydia: "Clamidia",
       herpes: "Herpes",
       genitalWarts: "Verrugas Genitales",
       hiv: "VIH",
-      hepBC: "Hep B,C"
+      hepBC: "Hep B,C",
     },
     social: {
       title: "Historial Social",
@@ -392,10 +410,12 @@ export const translations = {
       beer: "Cerveza",
       wine: "Vino",
       hardLiquor: "Licor Fuerte",
-      cutDown: "¿Alguna vez ha sentido que debería reducir su consumo de alcohol?",
+      cutDown:
+        "¿Alguna vez ha sentido que debería reducir su consumo de alcohol?",
       annoyed: "¿La gente lo ha molestado al criticar su forma de beber?",
       guilty: "¿Alguna vez se ha sentido mal o culpable por beber?",
-      morning: "¿Alguna vez ha tomado una bebida a primera hora de la mañana para calmar los nervios o para deshacerse de una resaca?",
+      morning:
+        "¿Alguna vez ha tomado una bebida a primera hora de la mañana para calmar los nervios o para deshacerse de una resaca?",
       tobacco: "Tabaco",
       useTobacco: "¿Usa tabaco?",
       howOld: "Si es así, ¿qué edad tenía cuando empezó a fumar?",
@@ -408,7 +428,7 @@ export const translations = {
       yearsAgoQuit: "Si es así, ¿hace cuántos años lo dejó?",
       drugs: "Drogas",
       useRecreational: "¿Actualmente usa drogas recreativas o callejeras?",
-      listDrugs: "Si es así, liste y cantidades usadas"
+      listDrugs: "Si es así, liste y cantidades usadas",
     },
     nutrition: {
       title: "Historial de Nutrición",
@@ -426,7 +446,8 @@ export const translations = {
       mealsPerDay: "Comidas por día",
       waterPerDay: "Agua por día",
       fluids: "Líquidos (café, té, soda)",
-      additionalInfo: "Por favor agregue cualquier otra información sobre su salud que desee que su proveedor sepa aquí"
+      additionalInfo:
+        "Por favor agregue cualquier otra información sobre su salud que desee que su proveedor sepa aquí",
     },
     genderSpecific: {
       maleOnly: "Solo Hombres",
@@ -454,13 +475,13 @@ export const translations = {
       breastLump: "Bulto en el seno o secreción del pezón",
       painfulIntercourse: "Relaciones sexuales dolorosas",
       useCondoms: "¿Usa condones?",
-      birthControl: "Otro método anticonceptivo usado"
+      birthControl: "Otro método anticonceptivo usado",
     },
     buttons: {
       next: "Siguiente",
       previous: "Anterior",
       submit: "Enviar Solicitud",
-      remove: "Eliminar"
-    }
-  }
+      remove: "Eliminar",
+    },
+  },
 };

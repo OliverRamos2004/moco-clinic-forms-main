@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { PatientsList } from "./pages/PatientsList";
 import { supabase } from "./lib/supabaseClient";
+import { PatientDetails } from "./pages/PatientDetails";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/patients" element={<PatientsList />} />
+            <Route path="/patients/:person_id" element={<PatientDetails />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
