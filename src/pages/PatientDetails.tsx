@@ -175,8 +175,19 @@ export const PatientDetails = () => {
                 partner_uses_condom,
                 other_birth_control_method,
                 waking_at_night_to_urinate
-              )
+              ),
 
+              sexual_history:sexual_history!sexual_history_intake_id_fkey (
+                uses_condom,
+                number_of_sex_partners_total,
+                current_partner_gender,
+                screened_for_sti,
+                interested_in_sti_screen
+              ),
+
+              sti_interest:sti_interest!sti_interest_intake_id_fkey (
+                sti
+              )
               
             )
           )
@@ -212,10 +223,13 @@ export const PatientDetails = () => {
   const pastMedHistory = intake?.past_medical_history || [];
   const familyHistory = intake?.family_history || [];
   const dentalHistory = intake?.dental_history || null;
+  const tbScreening = intake?.tb_screening || null; // Check this line
   const tb = intake?.tb_screening;
   const maleHistory = intake?.male_history || null;
   const femaleHistory = intake?.female_history || null;
   const emergencyContacts = data?.emergency_contacts || [];
+  const sexualHistory = intake?.sexual_history || null;
+  const stiInterest = intake?.sti_interest || [];
 
   // STEP 3: Render the UI
 
@@ -461,19 +475,20 @@ export const PatientDetails = () => {
       {/* MEDICATIONS */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Medications</CardTitle>
+          <CardTitle>Current Medications</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+
+        <CardContent className="space-y-3">
           {medications.length === 0 ? (
             <p>No medications reported.</p>
           ) : (
-            medications.map((m: any, i: number) => (
+            medications.map((m, i) => (
               <div
                 key={i}
-                className="border rounded-md p-3 bg-gray-50 flex flex-col gap-1"
+                className="border rounded-md p-4 bg-gray-50 space-y-1"
               >
                 <p>
-                  <strong>Drug Name:</strong> {m.drug_name || "—"}
+                  <strong>Name:</strong> {m.drug_name || "—"}
                 </p>
                 <p>
                   <strong>Strength:</strong> {m.strength || "—"}
@@ -834,6 +849,65 @@ export const PatientDetails = () => {
                 </p>
               </div>
             ))
+          )}
+        </CardContent>
+      </Card>
+
+      {/* SEXUAL HISTORY */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Sexual History</CardTitle>
+        </CardHeader>
+
+        <CardContent className="space-y-2">
+          {!sexualHistory ? (
+            <p>No sexual history information recorded.</p>
+          ) : (
+            <div className="space-y-1">
+              <p>
+                <strong>Uses Condom:</strong>{" "}
+                {sexualHistory.uses_condom ? "Yes" : "No"}
+              </p>
+
+              <p>
+                <strong>Number of Lifetime Partners:</strong>{" "}
+                {sexualHistory.number_of_sex_partners_total || "—"}
+              </p>
+
+              <p>
+                <strong>Current Partner Gender:</strong>{" "}
+                {sexualHistory.current_partner_gender || "—"}
+              </p>
+
+              <p>
+                <strong>Screened for STI Before:</strong>{" "}
+                {sexualHistory.screened_for_sti ? "Yes" : "No"}
+              </p>
+
+              <p>
+                <strong>Interested in STI Screen:</strong>{" "}
+                {sexualHistory.interested_in_sti_screen ? "Yes" : "No"}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* STI Interest */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>STI Screening Interest</CardTitle>
+        </CardHeader>
+
+        <CardContent className="space-y-2">
+          {stiInterest.length === 0 ? (
+            <p>No STI screening preferences recorded.</p>
+          ) : (
+            <ul className="list-disc ml-6">
+              {stiInterest.map((item: any, idx: number) => (
+                <li key={idx}>{item.sti || "Unspecified"}</li>
+              ))}
+            </ul>
           )}
         </CardContent>
       </Card>

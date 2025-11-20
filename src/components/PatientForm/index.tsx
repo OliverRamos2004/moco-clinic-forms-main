@@ -77,6 +77,8 @@ export const PatientForm = () => {
     weight_stability: "",
     signature_name: "",
     signature_date: "",
+    allergies: [],
+    medications: [],
   });
 
   const [activeTab, setActiveTab] = useState("basic");
@@ -87,6 +89,8 @@ export const PatientForm = () => {
   };
 
   console.log("FORM DATA BEFORE SUBMIT:", formData);
+
+  // Handle form submission
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -173,6 +177,18 @@ export const PatientForm = () => {
 
       if (intakeError) throw intakeError;
       const intake_id = intakeData.intake_id;
+
+      // Insert Medications
+      if (formData.medications?.length > 0) {
+        for (const med of formData.medications) {
+          await supabase.from("medication").insert({
+            intake_id,
+            drug_name: med.drug_name || null,
+            strength: med.strength || null,
+            frequency: med.frequency || null,
+          });
+        }
+      }
 
       // ---------------------------
       // 5️⃣ SAFE NUTRITION PAYLOAD
@@ -274,6 +290,21 @@ export const PatientForm = () => {
         .insert([socialHistoryPayload]);
 
       if (socialError) throw socialError;
+
+      // 6️⃣ Insert ALLERGIES (uses intake_id)
+      if (formData.allergies && formData.allergies.length > 0) {
+        const allergyPayload = formData.allergies.map((a) => ({
+          intake_id,
+          allergen: a.allergen || null,
+          reaction: a.reaction || null,
+        }));
+
+        const { error: allergyError } = await supabase
+          .from("allergy")
+          .insert(allergyPayload);
+
+        if (allergyError) throw allergyError;
+      }
 
       // ---------------------------
       // 🎉 SUCCESS
