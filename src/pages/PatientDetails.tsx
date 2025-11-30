@@ -8,201 +8,261 @@ export const PatientDetails = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [nutrition, setNutrition] = useState<any | null>(null);
+  const [social, setSocial] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchDetails = async () => {
       setLoading(true);
+      setError(null);
+      setNutrition(null);
+      setSocial(null);
 
-      // STEP 1: Fetch all data in one go
-
+      // 1) Fetch person + applications + intakes + other nested stuff
       const { data, error } = await supabase
         .from("person")
         .select(
           `
-          person_id,
-          legal_first_name,
-          legal_last_name,
-          preferred_name,
-          date_of_birth,
-          sex_at_birth,
-          phone,
-          email,
+        person_id,
+        legal_first_name,
+        legal_last_name,
+        preferred_name,
+        date_of_birth,
+        sex_at_birth,
+        phone,
+        email,
 
-          address:address!address_person_id_fkey (
-            street, city, state, zip
-          ),
+        address:address!address_person_id_fkey (
+          street,
+          city,
+          state,
+          zip
+        ),
 
-          emergency_contacts:emergency_contact!emergency_contact_person_id_fkey (
-            name,
-            relationship,
-            phone
-          ),
+        emergency_contacts:emergency_contact!emergency_contact_person_id_fkey (
+          name,
+          relationship,
+          phone
+        ),
 
+        application:application!application_applicant_id_fkey (
+          application_id,
+          montgomery_resident,
+          has_health_insurance,
+          last4_ssn,
+          signature_name,
+          signature_date,
 
-          application:application!application_applicant_id_fkey (
-            application_id,
-            montgomery_resident,
-            has_health_insurance,
-            last4_ssn,
-            signature_name,
-            signature_date,
+          intake:intake!intake_application_id_fkey (
+            intake_id,
+            main_reason_for_visit,
+            other_concerns,
+            preferred_pharmacy,
+            pharmacy_phone,
+            immunizations_current,
 
-            intake:intake!intake_application_id_fkey (
-              intake_id,
-              main_reason_for_visit,
-              other_concerns,
-              preferred_pharmacy,
-              pharmacy_phone,
-              immunizations_current,
+            allergies:allergy!allergy_intake_id_fkey (
+              allergen,
+              reaction
+            ),
 
-              nutrition_history:nutrition_history!nutrition_history_intake_id_fkey (
-                fruit_servings_per_day,
-                vegetable_servings_per_day,
-                water_per_day,
-                meals_per_day,
-                protein_sources,
-                sugar_intake,
-                salt_intake,
-                food_intolerances_allergies,
-                additional_notes
-              ),
+            medications:medication!medication_intake_id_fkey (
+              drug_name,
+              strength,
+              frequency
+            ),
 
-              social_history:social_history!social_history_intake_id_fkey (
-                caffeine_level,
-                caffeine_cups_per_day,
-                alcohol_use,
-                drinks_per_week_beer,
-                drinks_per_week_wine,
-                drinks_per_week_liquor,
-                cage_cut_down,
-                cage_annoyed,
-                cage_guilty,
-                cage_eye_opener,
-                tobacco_current,
-                tobacco_started_age,
-                tobacco_ever,
-                tobacco_quit_years_ago,
-                drugs_current,
-                drugs_list_amounts
-              ),
+            past_medical_history:past_med_history_event!past_med_history_event_intake_id_fkey (
+              type,
+              description,
+              year,
+              hospital
+            ),
 
-              allergies:allergy!allergy_intake_id_fkey (
-                allergen,
-                reaction
-              ),
+            family_history:family_history!family_history_intake_id_fkey (
+              fam_hist_id,
+              relation,
+              age,
+              alive,
 
-              medications:medication!medication_intake_id_fkey (
-                drug_name,
-                strength,
-                frequency
-              ),
-
-              past_medical_history:past_med_history_event!past_med_history_event_intake_id_fkey (
-                type,
-                description,
-                year,
-                hospital
-              ),
-
-              family_history:family_history!family_history_intake_id_fkey (
-                fam_hist_id,
-                relation,
-                age,
-                alive,
-
-                problems:family_history_problem!family_history_problem_fam_hist_id_fkey (
-                  problem:family_problem_lookup!family_history_problem_problem_id_fkey (
-                    name
-                  )
+              problems:family_history_problem!family_history_problem_fam_hist_id_fkey (
+                problem:family_problem_lookup!family_history_problem_problem_id_fkey (
+                  name
                 )
-              ),
-
-
-              dental_history:dental_history!dental_history_intake_id_fkey (
-                regular_checkups,
-                gums_bleed,
-                periodontal_disease,
-                grind_teeth,
-                wore_braces,
-                current_mouth_pain,
-                brushing_per_day,
-                floss,
-                floss_how_often,
-                face_mouth_trauma,
-                trauma_when,
-                dentures_partials,
-                dentures_age,
-                last_exam_cleaning
-              ),
-
-              tb_screening:tb_screening!tb_screening_intake_id_fkey (
-                active_tb,
-                cough_gt_3_weeks,
-                cough_produces_blood,
-                exposed_to_tb,
-                traveled_outside_usa_past_12m
-              ),
-
-              male_history:male_history!male_history_intake_id_fkey (
-                penile_discharge,
-                penile_lesions,
-                erection_difficulty,
-                trouble_urinating,
-                waking_at_night_to_urinate
-              ),
-
-              female_history:female_history!female_history_intake_id_fkey (
-                last_pap_date,
-                pap_abnormal,
-                last_mammogram_date,
-                mammogram_abnormal,
-                age_first_menstrual_period,
-                date_last_menstrual_period,
-                pregnancies,
-                births,
-                abortions,
-                miscarriages,
-                cesarean_count,
-                heavy_periods,
-                bleeding_between_periods,
-                extreme_menstrual_pain,
-                vaginal_itching_burning_discharge,
-                urine_leak,
-                hot_flashes,
-                menopause,
-                breast_lump_or_nipple_discharge,
-                painful_intercourse,
-                partner_uses_condom,
-                other_birth_control_method,
-                waking_at_night_to_urinate
-              ),
-
-              sexual_history:sexual_history!sexual_history_intake_id_fkey (
-                uses_condom,
-                number_of_sex_partners_total,
-                current_partner_gender,
-                screened_for_sti,
-                interested_in_sti_screen
-              ),
-
-              sti_interest:sti_interest!sti_interest_intake_id_fkey (
-                sti
               )
-              
+            ),
+
+            dental_history:dental_history!dental_history_intake_id_fkey (
+              regular_checkups,
+              gums_bleed,
+              periodontal_disease,
+              grind_teeth,
+              wore_braces,
+              current_mouth_pain,
+              brushing_per_day,
+              floss,
+              floss_how_often,
+              face_mouth_trauma,
+              trauma_when,
+              dentures_partials,
+              dentures_age,
+              last_exam_cleaning
+            ),
+
+            tb_screening:tb_screening!tb_screening_intake_id_fkey (
+              active_tb,
+              cough_gt_3_weeks,
+              cough_produces_blood,
+              exposed_to_tb,
+              traveled_outside_usa_past_12m
+            ),
+
+            male_history:male_history!male_history_intake_id_fkey (
+              penile_discharge,
+              penile_lesions,
+              erection_difficulty,
+              trouble_urinating,
+              waking_at_night_to_urinate
+            ),
+
+            female_history:female_history!female_history_intake_id_fkey (
+              last_pap_date,
+              pap_abnormal,
+              last_mammogram_date,
+              mammogram_abnormal,
+              age_first_menstrual_period,
+              date_last_menstrual_period,
+              pregnancies,
+              births,
+              abortions,
+              miscarriages,
+              cesarean_count,
+              heavy_periods,
+              bleeding_between_periods,
+              extreme_menstrual_pain,
+              vaginal_itching_burning_discharge,
+              urine_leak,
+              hot_flashes,
+              menopause,
+              breast_lump_or_nipple_discharge,
+              painful_intercourse,
+              partner_uses_condom,
+              other_birth_control_method,
+              waking_at_night_to_urinate
+            ),
+
+            sexual_history:sexual_history!sexual_history_intake_id_fkey (
+              uses_condom,
+              number_of_sex_partners_total,
+              current_partner_gender,
+              screened_for_sti,
+              interested_in_sti_screen
+            ),
+
+            sti_interest:sti_interest!sti_interest_intake_id_fkey (
+              sti
             )
           )
+        )
         `
         )
         .eq("person_id", Number(person_id))
         .maybeSingle();
 
-      if (error) {
+      if (error || !data) {
         console.error("❌ Failed to load details:", error);
-        setError(error.message);
-      } else {
-        console.log("🔥 Loaded:", data);
-        setData(data);
+        setError(error?.message || "Failed to load patient");
+        setLoading(false);
+        return;
       }
+
+      console.log("🔥 Loaded:", data);
+
+      // 2) Figure out the latest application + intake for this person
+      const applications = Array.isArray(data.application)
+        ? data.application
+        : [];
+      const sortedApps = applications
+        .slice()
+        .sort(
+          (a: any, b: any) => (b.application_id ?? 0) - (a.application_id ?? 0)
+        );
+      const latestApp = sortedApps[0] || null;
+
+      const intakes = Array.isArray(latestApp?.intake) ? latestApp.intake : [];
+      const sortedIntakes = intakes
+        .slice()
+        .sort((a: any, b: any) => (b.intake_id ?? 0) - (a.intake_id ?? 0));
+      const latestIntake = sortedIntakes[0] || null;
+
+      let nutritionRow: any | null = null;
+      let socialRow: any | null = null;
+
+      // 3) If we have an intake_id, fetch nutrition + social directly
+      if (latestIntake?.intake_id) {
+        const intakeId = latestIntake.intake_id;
+
+        const [
+          { data: nutritionData, error: nutritionError },
+          { data: socialData, error: socialError },
+        ] = await Promise.all([
+          supabase
+            .from("nutrition_history")
+            .select(
+              `
+            fruit_servings_per_day,
+            vegetable_servings_per_day,
+            water_per_day,
+            meals_per_day,
+            protein_sources,
+            sugar_intake,
+            salt_intake,
+            food_intolerances_allergies,
+            additional_notes
+            `
+            )
+            .eq("intake_id", intakeId)
+            .maybeSingle(),
+          supabase
+            .from("social_history")
+            .select(
+              `
+            caffeine_level,
+            caffeine_cups_per_day,
+            alcohol_use,
+            drinks_per_week_beer,
+            drinks_per_week_wine,
+            drinks_per_week_liquor,
+            cage_cut_down,
+            cage_annoyed,
+            cage_guilty,
+            cage_eye_opener,
+            tobacco_current,
+            tobacco_started_age,
+            tobacco_ever,
+            tobacco_quit_years_ago,
+            drugs_current,
+            drugs_list_amounts
+            `
+            )
+            .eq("intake_id", intakeId)
+            .maybeSingle(),
+        ]);
+
+        if (nutritionError) {
+          console.error("❌ Nutrition fetch error:", nutritionError);
+        }
+        if (socialError) {
+          console.error("❌ Social history fetch error:", socialError);
+        }
+
+        nutritionRow = nutritionData || null;
+        socialRow = socialData || null;
+      }
+
+      setData(data);
+      setNutrition(nutritionRow);
+      setSocial(socialRow);
       setLoading(false);
     };
 
@@ -214,22 +274,50 @@ export const PatientDetails = () => {
 
   // STEP 2: Extract nested data
 
-  const app = data.application?.[0];
-  const intake = app?.intake?.[0];
-  const nutrition = intake?.nutrition_history?.[0];
-  const social = intake?.social_history?.[0];
+  // Pick the *latest* application and intake rather than the first one
+  // STEP 2: Extract nested data (always use the *latest* application + intake)
+
+  // 1) Latest application
+  // STEP 2: Extract nested data (for everything except nutrition + social)
+
+  const applications = Array.isArray(data.application) ? data.application : [];
+  const sortedApps = applications
+    .slice()
+    .sort(
+      (a: any, b: any) => (b.application_id ?? 0) - (a.application_id ?? 0)
+    );
+  const app = sortedApps[0] || null;
+
+  const intakes = Array.isArray(app?.intake) ? app.intake : [];
+  const sortedIntakes = intakes
+    .slice()
+    .sort((a: any, b: any) => (b.intake_id ?? 0) - (a.intake_id ?? 0));
+  const intake = sortedIntakes[0] || null;
+
   const allergies = intake?.allergies || [];
   const medications = intake?.medications || [];
   const pastMedHistory = intake?.past_medical_history || [];
   const familyHistory = intake?.family_history || [];
   const dentalHistory = intake?.dental_history || null;
-  const tbScreening = intake?.tb_screening || null; // Check this line
+  const tbScreening = intake?.tb_screening || null;
   const tb = intake?.tb_screening;
   const maleHistory = intake?.male_history || null;
   const femaleHistory = intake?.female_history || null;
-  const emergencyContacts = data?.emergency_contacts || [];
   const sexualHistory = intake?.sexual_history || null;
   const stiInterest = intake?.sti_interest || [];
+  const emergencyContacts = data?.emergency_contacts || [];
+  const address =
+    Array.isArray(data.address) && data.address.length > 0
+      ? data.address[0]
+      : data.address || null;
+
+  console.log("📍 Address in PatientDetails:", address);
+
+  console.log("👀 Intake, nutrition, social in PatientDetails:", {
+    intake,
+    nutrition,
+    social,
+  });
 
   // STEP 3: Render the UI
 
@@ -279,16 +367,16 @@ export const PatientDetails = () => {
         </CardHeader>
         <CardContent className="space-y-2">
           <p>
-            <strong>Street:</strong> {data.address?.street}
+            <strong>Street:</strong> {address?.street || "—"}
           </p>
           <p>
-            <strong>City:</strong> {data.address?.city}
+            <strong>City:</strong> {address?.city || "—"}
           </p>
           <p>
-            <strong>State:</strong> {data.address?.state}
+            <strong>State:</strong> {address?.state || "—"}
           </p>
           <p>
-            <strong>Zip:</strong> {data.address?.zip}
+            <strong>Zip:</strong> {address?.zip || "—"}
           </p>
         </CardContent>
       </Card>

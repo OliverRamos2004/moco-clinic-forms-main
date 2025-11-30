@@ -99,6 +99,16 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
           </div>
 
           <div>
+            <Label>State</Label>
+            <Input
+              type="text"
+              value={formData.state || ""}
+              onChange={(e) => updateFormData({ state: e.target.value })}
+              required
+            />
+          </div>
+
+          <div>
             <Label>{t("basicInfo.zip")}</Label>
             <Input
               type="text"
@@ -179,6 +189,57 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
               </div>
             </RadioGroup>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Emergency Contacts</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {[1, 2].map((i) => (
+            <div
+              key={i}
+              className="border rounded-md p-4 space-y-3 bg-muted/30"
+            >
+              <p className="font-semibold text-sm">Contact {i}</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label>Name</Label>
+                  <Input
+                    value={formData[`emergency${i}_name`] || ""}
+                    onChange={(e) =>
+                      updateFormData({
+                        [`emergency${i}_name`]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label>Relationship</Label>
+                  <Input
+                    value={formData[`emergency${i}_relationship`] || ""}
+                    onChange={(e) =>
+                      updateFormData({
+                        [`emergency${i}_relationship`]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label>Phone</Label>
+                  <Input
+                    value={formData[`emergency${i}_phone`] || ""}
+                    onChange={(e) =>
+                      updateFormData({
+                        [`emergency${i}_phone`]: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
         </CardContent>
       </Card>
     </div>

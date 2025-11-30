@@ -57,7 +57,7 @@ export const PatientsList = () => {
 
           address:address!address_person_id_fkey (
             street,
-            city,
+            city, 
             zip
           ),
 
