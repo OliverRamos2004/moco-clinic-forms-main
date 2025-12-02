@@ -3,6 +3,7 @@
 Montgomery County Free Clinic (MCFC) — CSC 400 Capstone Project
 
 Authors: Oliver Ramos, Curtis Faughnan, Haile, Lucas
+
 Semester: Fall 2024 / Spring 2025
 
 📌 Overview
