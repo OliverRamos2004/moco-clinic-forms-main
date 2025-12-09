@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import { PatientsList } from "./pages/PatientsList";
 import { supabase } from "./lib/supabaseClient";
 import { PatientDetails } from "./pages/PatientDetails";
+import PatientSearchPage from "./pages/PatientSearchPage"; // adjust path if needed
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => {
             <Route path="/patients" element={<PatientsList />} />
             <Route path="/patients/:person_id" element={<PatientDetails />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/search" element={<PatientSearchPage />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

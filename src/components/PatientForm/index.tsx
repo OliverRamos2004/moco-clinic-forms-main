@@ -11,6 +11,7 @@ import { FamilyHistoryTab } from "./FamilyHistoryTab";
 import { LifestyleTab } from "./LifestyleTab";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
+import { Link } from "react-router-dom";
 
 // Helper to safely convert form values to integers for Supabase
 const safeInt = (value: any) => {
@@ -714,6 +715,15 @@ export const PatientForm = () => {
       <Header />
 
       <main className="container mx-auto px-4 py-8 max-w-5xl">
+        {/* 🔹 Top bar: title + Search button */}
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-semibold">New Patient Intake</h1>
+
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/search">Search Patients</Link>
+          </Button>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <Card className="shadow-lg">
             <Tabs
@@ -810,10 +820,9 @@ export const PatientForm = () => {
               <Button
                 type="submit"
                 className="bg-primary"
-                disabled={isSubmitting} // ✅ Disable while submitting
+                disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : t("buttons.submit")}{" "}
-                {/* ✅ Dynamic label */}
+                {isSubmitting ? "Submitting..." : t("buttons.submit")}
               </Button>
             ) : (
               <Button

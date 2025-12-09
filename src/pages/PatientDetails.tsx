@@ -2,6 +2,301 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+function buildPatientRow(
+  patient: any,
+  address: any | null,
+  nutrition: any | null,
+  social: any | null
+) {
+  // --- Helper: always use the latest application + intake ---
+  const applicationArr = Array.isArray(patient.application)
+    ? patient.application
+    : patient.application
+    ? [patient.application]
+    : [];
+
+  const application =
+    applicationArr.length > 0
+      ? applicationArr[applicationArr.length - 1]
+      : null;
+
+  const intakeArr =
+    application?.intake && Array.isArray(application.intake)
+      ? application.intake
+      : application?.intake
+      ? [application.intake]
+      : [];
+
+  const intake = intakeArr.length > 0 ? intakeArr[intakeArr.length - 1] : null;
+
+  // --- Allergies summary ---
+  const allergies: any[] = Array.isArray(intake?.allergies)
+    ? intake.allergies
+    : [];
+
+  const allergies_summary = allergies
+    .map((a) => {
+      if (!a) return "";
+      const allergen = a.allergen ?? "";
+      const reaction = a.reaction ?? "";
+      if (!allergen && !reaction) return "";
+      return reaction ? `${allergen} (${reaction})` : allergen;
+    })
+    .filter(Boolean)
+    .join("; ");
+
+  // --- Medications summary ---
+  const medications: any[] = Array.isArray(intake?.medications)
+    ? intake.medications
+    : [];
+
+  const medications_summary = medications
+    .map((m) => {
+      if (!m) return "";
+      const name = m.drug_name ?? "";
+      const strength = m.strength ?? "";
+      const freq = m.frequency ?? "";
+      const core = strength ? `${name} ${strength}` : name;
+      if (!core && !freq) return "";
+      return freq ? `${core} - ${freq}` : core;
+    })
+    .filter(Boolean)
+    .join("; ");
+
+  // --- Past Medical History summary ---
+  const pastEvents: any[] = Array.isArray(intake?.past_medical_history)
+    ? intake.past_medical_history
+    : [];
+
+  const past_medical_history_summary = pastEvents
+    .map((e) => {
+      if (!e) return "";
+      const type = e.type ?? "";
+      const year = e.year ?? "";
+      const desc = e.description ?? "";
+      const hosp = e.hospital ?? "";
+      const parts = [type, year, desc, hosp].filter(Boolean);
+      return parts.join(" - ");
+    })
+    .filter(Boolean)
+    .join(" | ");
+
+  // --- Family History summary ---
+  const familyArr: any[] = Array.isArray(intake?.family_history)
+    ? intake.family_history
+    : [];
+
+  const family_history_summary = familyArr
+    .map((fh) => {
+      if (!fh) return "";
+      const relation = fh.relation ?? "Relative";
+      const problemNames = Array.isArray(fh.problems)
+        ? fh.problems
+            .map(
+              (p: any) =>
+                p?.problem?.name ??
+                p?.problem?.Name ?? // just in case
+                ""
+            )
+            .filter(Boolean)
+        : [];
+      if (problemNames.length === 0) {
+        return relation;
+      }
+      return `${relation}: ${problemNames.join(", ")}`;
+    })
+    .filter(Boolean)
+    .join(" | ");
+
+  // --- Dental History (flatten a few key fields) ---
+  const dentalArr: any[] = Array.isArray(intake?.dental_history)
+    ? intake.dental_history
+    : intake?.dental_history
+    ? [intake.dental_history]
+    : [];
+  const dental = dentalArr[0] ?? null;
+
+  // --- TB Screening (flatten booleans) ---
+  const tbArr: any[] = Array.isArray(intake?.tb_screening)
+    ? intake.tb_screening
+    : intake?.tb_screening
+    ? [intake.tb_screening]
+    : [];
+  const tb = tbArr[0] ?? null;
+
+  // --- Male / Female History ---
+  const male = intake?.male_history ?? null;
+  const female = intake?.female_history ?? null;
+
+  // --- Sexual history + STI interest ---
+  const sexual = intake?.sexual_history ?? null;
+  const stiInterestArr: any[] = Array.isArray(intake?.sti_interest)
+    ? intake.sti_interest
+    : [];
+
+  const sti_interest_list = stiInterestArr
+    .map((s) => s?.sti ?? "")
+    .filter(Boolean)
+    .join(", ");
+
+  // --- Build flat row object ---
+  return {
+    // ===== Basic identity =====
+    person_id: patient.person_id,
+    legal_first_name: patient.legal_first_name ?? "",
+    legal_last_name: patient.legal_last_name ?? "",
+    preferred_name: patient.preferred_name ?? "",
+    date_of_birth: patient.date_of_birth ?? "",
+    sex_at_birth: patient.sex_at_birth ?? "",
+    phone: patient.phone ?? "",
+    email: patient.email ?? "",
+
+    // ===== Address (use the address we already resolved in the component) =====
+    street: address?.street ?? "",
+    city: address?.city ?? "",
+    state: address?.state ?? "",
+    zip: address?.zip ?? "",
+
+    // ===== Application =====
+    application_id: application?.application_id ?? "",
+    montgomery_resident: application?.montgomery_resident ?? "",
+    has_health_insurance: application?.has_health_insurance ?? "",
+    last4_ssn: application?.last4_ssn ?? "",
+    signature_name: application?.signature_name ?? "",
+    signature_date: application?.signature_date ?? "",
+
+    // ===== Intake basics =====
+    intake_id: intake?.intake_id ?? "",
+    main_reason_for_visit: intake?.main_reason_for_visit ?? "",
+    other_concerns: intake?.other_concerns ?? "",
+    preferred_pharmacy: intake?.preferred_pharmacy ?? "",
+    pharmacy_phone: intake?.pharmacy_phone ?? "",
+    immunizations_current: intake?.immunizations_current ?? "",
+
+    // ===== Nutrition (use the nutrition row passed in from component) =====
+    nutrition_dieting: nutrition?.dieting ?? "",
+    nutrition_meals_per_day: nutrition?.meals_per_day ?? "",
+    nutrition_fruit_servings_per_day: nutrition?.fruit_servings_per_day ?? "",
+    nutrition_vegetable_servings_per_day:
+      nutrition?.vegetable_servings_per_day ?? "",
+    nutrition_water_per_day: nutrition?.water_per_day ?? "",
+    nutrition_protein_sources: nutrition?.protein_sources ?? "",
+    nutrition_sugar_intake: nutrition?.sugar_intake ?? "",
+    nutrition_salt_intake: nutrition?.salt_intake ?? "",
+    nutrition_food_intolerances_allergies:
+      nutrition?.food_intolerances_allergies ?? "",
+    nutrition_additional_notes: nutrition?.additional_notes ?? "",
+
+    // ===== Social History (use the social row passed in) =====
+    social_caffeine_level: social?.caffeine_level ?? "",
+    social_caffeine_cups_per_day: social?.caffeine_cups_per_day ?? "",
+    social_alcohol_use: social?.alcohol_use ?? "",
+    social_drinks_per_week_beer: social?.drinks_per_week_beer ?? "",
+    social_drinks_per_week_wine: social?.drinks_per_week_wine ?? "",
+    social_drinks_per_week_liquor: social?.drinks_per_week_liquor ?? "",
+    social_cage_cut_down: social?.cage_cut_down ?? "",
+    social_cage_annoyed: social?.cage_annoyed ?? "",
+    social_cage_guilty: social?.cage_guilty ?? "",
+    social_cage_eye_opener: social?.cage_eye_opener ?? "",
+    social_tobacco_current: social?.tobacco_current ?? "",
+    social_tobacco_started_age: social?.tobacco_started_age ?? "",
+    social_tobacco_ever: social?.tobacco_ever ?? "",
+    social_tobacco_quit_years_ago: social?.tobacco_quit_years_ago ?? "",
+    social_drugs_current: social?.drugs_current ?? "",
+    social_drugs_list_amounts: social?.drugs_list_amounts ?? "",
+
+    // ===== Allergies / Medications / Past History / Family =====
+    allergies_summary,
+    medications_summary,
+    past_medical_history_summary,
+    family_history_summary,
+
+    // ===== Dental History =====
+    dental_regular_checkups: dental?.regular_checkups ?? "",
+    dental_gums_bleed: dental?.gums_bleed ?? "",
+    dental_periodontal_disease: dental?.periodontal_disease ?? "",
+    dental_current_mouth_pain: dental?.current_mouth_pain ?? "",
+    dental_brushing_per_day: dental?.brushing_per_day ?? "",
+    dental_floss: dental?.floss ?? "",
+    dental_floss_how_often: dental?.floss_how_often ?? "",
+    dental_last_exam_cleaning: dental?.last_exam_cleaning ?? "",
+
+    // ===== TB Screening =====
+    tb_active_tb: tb?.active_tb ?? "",
+    tb_cough_gt_3_weeks: tb?.cough_gt_3_weeks ?? "",
+    tb_cough_produces_blood: tb?.cough_produces_blood ?? "",
+    tb_exposed_to_tb: tb?.exposed_to_tb ?? "",
+    tb_traveled_outside_usa_past_12m: tb?.traveled_outside_usa_past_12m ?? "",
+
+    // ===== Male History =====
+    male_penile_discharge: male?.penile_discharge ?? "",
+    male_penile_lesions: male?.penile_lesions ?? "",
+    male_erection_difficulty: male?.erection_difficulty ?? "",
+    male_trouble_urinating: male?.trouble_urinating ?? "",
+    male_waking_at_night_to_urinate: male?.waking_at_night_to_urinate ?? "",
+
+    // ===== Female History =====
+    female_last_pap_date: female?.last_pap_date ?? "",
+    female_pap_abnormal: female?.pap_abnormal ?? "",
+    female_last_mammogram_date: female?.last_mammogram_date ?? "",
+    female_mammogram_abnormal: female?.mammogram_abnormal ?? "",
+    female_age_first_menstrual_period: female?.age_first_menstrual_period ?? "",
+    female_date_last_menstrual_period: female?.date_last_menstrual_period ?? "",
+    female_pregnancies: female?.pregnancies ?? "",
+    female_births: female?.births ?? "",
+    female_abortions: female?.abortions ?? "",
+    female_miscarriages: female?.miscarriages ?? "",
+    female_cesarean_count: female?.cesarean_count ?? "",
+    female_heavy_periods: female?.heavy_periods ?? "",
+    female_bleeding_between_periods: female?.bleeding_between_periods ?? "",
+    female_extreme_menstrual_pain: female?.extreme_menstrual_pain ?? "",
+    female_vaginal_itching_burning_discharge:
+      female?.vaginal_itching_burning_discharge ?? "",
+    female_urine_leak: female?.urine_leak ?? "",
+    female_hot_flashes: female?.hot_flashes ?? "",
+    female_menopause: female?.menopause ?? "",
+    female_breast_lump_or_nipple_discharge:
+      female?.breast_lump_or_nipple_discharge ?? "",
+    female_painful_intercourse: female?.painful_intercourse ?? "",
+    female_partner_uses_condom: female?.partner_uses_condom ?? "",
+    female_other_birth_control_method: female?.other_birth_control_method ?? "",
+    female_waking_at_night_to_urinate: female?.waking_at_night_to_urinate ?? "",
+
+    // ===== Sexual History + STI Interest =====
+    sexual_uses_condom: sexual?.uses_condom ?? "",
+    sexual_number_of_sex_partners_total:
+      sexual?.number_of_sex_partners_total ?? "",
+    sexual_current_partner_gender: sexual?.current_partner_gender ?? "",
+    sexual_screened_for_sti: sexual?.screened_for_sti ?? "",
+    sexual_interested_in_sti_screen: sexual?.interested_in_sti_screen ?? "",
+    sti_interest_list,
+  };
+}
+
+function downloadCsv(filename: string, row: Record<string, any>) {
+  const headers = Object.keys(row);
+  const values = headers.map((h) => {
+    const v = row[h];
+    if (v === null || v === undefined) return "";
+    // Escape quotes and surround with quotes so commas are safe
+    return `"${String(v).replace(/"/g, '""')}"`;
+  });
+
+  const csv = headers.join(",") + "\n" + values.join(",");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 
 export const PatientDetails = () => {
   const { person_id } = useParams();
@@ -272,6 +567,13 @@ export const PatientDetails = () => {
   if (loading) return <p className="p-6">Loading…</p>;
   if (!data) return <p className="p-6">No patient data found.</p>;
 
+  const handleExportToCsv = () => {
+    if (!data) return;
+
+    const row = buildPatientRow(data, address, nutrition, social);
+    downloadCsv(`patient_${data.person_id}.csv`, row);
+  };
+
   // STEP 2: Extract nested data
 
   // Pick the *latest* application and intake rather than the first one
@@ -323,8 +625,20 @@ export const PatientDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Patient Details</h1>
+      {/* Top header row: title + export button */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold">Patient Details</h1>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleExportToCsv}
+        >
+          Export to Excel (CSV)
+        </Button>
+      </div>
 
+      {/* Back link */}
       <Link
         to="/patients"
         className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 mb-4"
