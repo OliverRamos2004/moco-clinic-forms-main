@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StaffNavbar } from "@/components//PatientForm/StaffNavbar";
 
 type PersonRow = {
   person_id: number;
@@ -69,6 +70,7 @@ const PatientSearchPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <StaffNavbar />
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Search Patients</h1>

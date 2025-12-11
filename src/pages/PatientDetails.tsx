@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StaffNavbar } from "@/components//PatientForm/StaffNavbar";
 
 function buildPatientRow(
   patient: any,
@@ -625,6 +626,7 @@ export const PatientDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      <StaffNavbar />
       {/* Top header row: title + export button */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">Patient Details</h1>

@@ -722,6 +722,12 @@ export const PatientForm = () => {
           <Button variant="outline" size="sm" asChild>
             <Link to="/search">Search Patients</Link>
           </Button>
+          <p className="mt-4 text-xs text-muted-foreground text-center">
+            Staff?{" "}
+            <Link to="/login" className="underline hover:text-primary">
+              Log in here
+            </Link>
+          </p>
         </div>
 
         <form onSubmit={handleSubmit}>

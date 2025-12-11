@@ -8,43 +8,88 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { PatientsList } from "./pages/PatientsList";
-import { supabase } from "./lib/supabaseClient";
 import { PatientDetails } from "./pages/PatientDetails";
-import PatientSearchPage from "./pages/PatientSearchPage"; // adjust path if needed
+import PatientSearchPage from "./pages/PatientSearchPage";
+import { supabase } from "./lib/supabaseClient";
+
+// 🔐 Auth bits you already created
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
 const App = () => {
+  // optional: keep your Supabase connection test
   useEffect(() => {
     const testSupabase = async () => {
-      const { data, error } = await supabase
-        .from("person")
-        .select("*")
-        .limit(1);
+      try {
+        const { data, error } = await supabase
+          .from("person")
+          .select("*")
+          .limit(1);
 
-      if (error) {
-        console.error("❌ Supabase connection failed:", error.message);
-      } else {
-        console.log("✅ Supabase connection successful:", data);
+        if (error) {
+          console.error("❌ Supabase connection failed:", error);
+        } else {
+          console.log("✅ Supabase connection successful:", data);
+        }
+      } catch (err) {
+        console.error("❌ Supabase connection failed:", err);
       }
     };
 
     testSupabase();
-  }, []); // ✅ runs once on load
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/patients" element={<PatientsList />} />
-            <Route path="/patients/:person_id" element={<PatientDetails />} />
-            <Route path="*" element={<NotFound />} />
-            <Route path="/search" element={<PatientSearchPage />} />
-          </Routes>
+          <AuthProvider>
+            {/* Toasts */}
+            <Toaster />
+            <Sonner />
+
+            <Routes>
+              {/* Public – patient intake form */}
+              <Route path="/" element={<Index />} />
+
+              {/* Public – staff login */}
+              <Route path="/login" element={<Login />} />
+
+              {/* Protected – staff-only pages */}
+              <Route
+                path="/patients"
+                element={
+                  <ProtectedRoute>
+                    <PatientsList />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/patients/:person_id"
+                element={
+                  <ProtectedRoute>
+                    <PatientDetails />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/search"
+                element={
+                  <ProtectedRoute>
+                    <PatientSearchPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

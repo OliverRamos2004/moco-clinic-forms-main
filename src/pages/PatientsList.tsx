@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { StaffNavbar } from "@/components//PatientForm/StaffNavbar";
 
 interface Address {
   street: string;
@@ -89,6 +90,7 @@ export const PatientsList = () => {
 
   return (
     <div className="min-h-screen bg-background p-6">
+      <StaffNavbar />
       <Card className="max-w-6xl mx-auto p-6 shadow-lg">
         <h1 className="text-2xl font-bold mb-6">Patient Records</h1>
 
