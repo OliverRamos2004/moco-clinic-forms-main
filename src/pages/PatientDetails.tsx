@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -306,6 +306,177 @@ export const PatientDetails = () => {
   const [error, setError] = useState(null);
   const [nutrition, setNutrition] = useState<any | null>(null);
   const [social, setSocial] = useState<any | null>(null);
+
+  // Insert deletion function
+
+  const navigate = useNavigate();
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeletePatient = async () => {
+    if (!data?.person_id) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently delete this patient and all related records?"
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+
+    try {
+      const personId = data.person_id as number;
+
+      // 1) Find all applications for this person
+      const { data: apps, error: appErr } = await supabase
+        .from("application")
+        .select("application_id")
+        .eq("applicant_id", personId);
+
+      if (appErr) {
+        console.error("Error fetching applications:", appErr);
+        throw appErr;
+      }
+
+      const appIds = apps?.map((a: any) => a.application_id) ?? [];
+
+      // 2) Find all intakes for those applications
+      let intakeIds: number[] = [];
+      if (appIds.length > 0) {
+        const { data: intakes, error: intakeErr } = await supabase
+          .from("intake")
+          .select("intake_id")
+          .in("application_id", appIds);
+
+        if (intakeErr) {
+          console.error("Error fetching intakes:", intakeErr);
+          throw intakeErr;
+        }
+
+        intakeIds = intakes?.map((i: any) => i.intake_id) ?? [];
+      }
+
+      // 3) If there are intakes, delete all child rows that depend on intake_id
+      if (intakeIds.length > 0) {
+        // 3a) Family history problems depend on family_history.fam_hist_id,
+        //     so delete those first.
+        const { data: famRows, error: famErr } = await supabase
+          .from("family_history")
+          .select("fam_hist_id")
+          .in("intake_id", intakeIds);
+
+        if (famErr) {
+          console.error("Error fetching family_history:", famErr);
+          throw famErr;
+        }
+
+        const famIds = famRows?.map((r: any) => r.fam_hist_id) ?? [];
+
+        if (famIds.length > 0) {
+          const { error: fhpErr } = await supabase
+            .from("family_history_problem")
+            .delete()
+            .in("fam_hist_id", famIds);
+
+          if (fhpErr) {
+            console.error("Error deleting family_history_problem:", fhpErr);
+            throw fhpErr;
+          }
+        }
+
+        // 3b) Delete other intake-child tables by intake_id
+        const intakeChildTables = [
+          "allergy",
+          "medication",
+          "past_med_history_event",
+          "dental_history",
+          "tb_screening",
+          "male_history",
+          "female_history",
+          "sexual_history",
+          "sti_interest",
+          "nutrition_history",
+          "social_history",
+          "family_history",
+        ];
+
+        for (const table of intakeChildTables) {
+          const { error } = await supabase
+            .from(table)
+            .delete()
+            .in("intake_id", intakeIds);
+
+          if (error) {
+            console.error(`Error deleting from ${table}:`, error);
+            throw error;
+          }
+        }
+
+        // 3c) Delete intakes themselves
+        const { error: intakeDelErr } = await supabase
+          .from("intake")
+          .delete()
+          .in("intake_id", intakeIds);
+
+        if (intakeDelErr) {
+          console.error("Error deleting intakes:", intakeDelErr);
+          throw intakeDelErr;
+        }
+      }
+
+      // 4) Delete applications
+      if (appIds.length > 0) {
+        const { error: appDelErr } = await supabase
+          .from("application")
+          .delete()
+          .in("application_id", appIds);
+
+        if (appDelErr) {
+          console.error("Error deleting applications:", appDelErr);
+          throw appDelErr;
+        }
+      }
+
+      // 5) Delete emergency contacts & address rows linked to the person
+      const { error: ecErr } = await supabase
+        .from("emergency_contact")
+        .delete()
+        .eq("person_id", personId);
+
+      if (ecErr) {
+        console.error("Error deleting emergency_contact:", ecErr);
+        throw ecErr;
+      }
+
+      const { error: addrErr } = await supabase
+        .from("address")
+        .delete()
+        .eq("person_id", personId);
+
+      if (addrErr) {
+        console.error("Error deleting address:", addrErr);
+        throw addrErr;
+      }
+
+      // 6) Finally, delete the person record
+      const { error: personErr } = await supabase
+        .from("person")
+        .delete()
+        .eq("person_id", personId);
+
+      if (personErr) {
+        console.error("Error deleting person:", personErr);
+        throw personErr;
+      }
+
+      alert("Patient deleted successfully.");
+      navigate("/patients", { replace: true });
+    } catch (err) {
+      console.error("Error deleting patient deeply:", err);
+      alert(
+        "There was an error deleting this patient. Please check the console for details."
+      );
+      setDeleting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -637,6 +808,15 @@ export const PatientDetails = () => {
           onClick={handleExportToCsv}
         >
           Export to Excel (CSV)
+        </Button>
+
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleDeletePatient}
+          disabled={deleting}
+        >
+          {deleting ? "Deleting..." : "Delete Patient"}
         </Button>
       </div>
 
