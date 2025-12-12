@@ -81,6 +81,9 @@ export const PatientForm = () => {
     weight_stability: "",
     signature_name: "",
     signature_date: "",
+    // signature_confirmed: formData.signature_confirmed ?? false,
+    signature_confirmed: false,
+
     allergies: [],
     medications: [],
   });
@@ -98,6 +101,16 @@ export const PatientForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.signature_confirmed) {
+      alert("Please check the box to confirm your electronic signature.");
+      return;
+    }
+
+    if (!formData.signature_name || !formData.signature_date) {
+      alert("Please enter your printed name and the date.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {

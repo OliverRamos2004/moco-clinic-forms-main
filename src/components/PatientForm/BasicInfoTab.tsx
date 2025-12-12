@@ -69,7 +69,7 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
 
           {/* EMAIL */}
           <div>
-            <Label>{t("basicInfo.email")}</Label>
+            <Label>Email</Label>
             <Input
               type="email"
               value={formData.email || ""}

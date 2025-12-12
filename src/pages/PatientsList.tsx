@@ -39,8 +39,122 @@ export const PatientsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Person | null>(null);
+  const [exporting, setExporting] = useState(false);
 
-  // JOIN
+  const handleExportLast50Patients = async () => {
+    try {
+      if (!window.confirm("Export last 50 patient records as CSV?")) return;
+      setExporting(true);
+
+      // 1) Fetch latest 50 patients with address + insurance
+      const { data, error } = await supabase
+        .from("person")
+        .select(
+          `
+        person_id,
+        legal_first_name,
+        legal_last_name,
+        date_of_birth,
+        phone,
+        email,
+        address:address!address_person_id_fkey (
+          street,
+          city,
+          state,
+          zip
+        ),
+        application:application!application_applicant_id_fkey (
+          has_health_insurance
+        )
+      `
+        )
+        .order("person_id", { ascending: false })
+        .limit(50);
+
+      if (error) {
+        console.error("❌ Error exporting patients:", error);
+        toast.error("There was an error exporting patients.");
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        toast("No patients to export yet.");
+        return;
+      }
+
+      // 2) CSV headers
+      const headers = [
+        "person_id",
+        "first_name",
+        "last_name",
+        "date_of_birth",
+        "phone",
+        "email",
+        "address",
+        "has_health_insurance",
+      ];
+
+      const rows: string[] = [];
+      rows.push(headers.join(",")); // header row
+
+      // 3) Build each row
+      for (const row of data as any[]) {
+        const addrObj = row.address?.[0] || null;
+        const addressString = addrObj
+          ? `${addrObj.street || ""}, ${addrObj.city || ""}, ${
+              addrObj.state || ""
+            } ${addrObj.zip || ""}`.trim()
+          : "";
+
+        const appObj = row.application?.[0] || null;
+        const hasInsurance =
+          appObj?.has_health_insurance === true
+            ? "Yes"
+            : appObj?.has_health_insurance === false
+            ? "No"
+            : "";
+
+        const values = [
+          row.person_id,
+          row.legal_first_name,
+          row.legal_last_name,
+          row.date_of_birth,
+          row.phone,
+          row.email,
+          addressString,
+          hasInsurance,
+        ].map((v) => {
+          if (v === null || v === undefined) return "";
+          return `"${String(v).replace(/"/g, '""')}"`;
+        });
+
+        rows.push(values.join(","));
+      }
+
+      const csvString = rows.join("\n");
+
+      // 4) Trigger download
+      const blob = new Blob([csvString], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "last-50-patients.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success("Exported last 50 patients.");
+    } catch (err) {
+      console.error("❌ Unexpected export error:", err);
+      toast.error("Unexpected error exporting patients.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -91,8 +205,23 @@ export const PatientsList = () => {
   return (
     <div className="min-h-screen bg-background p-6">
       <StaffNavbar />
+
       <Card className="max-w-6xl mx-auto p-6 shadow-lg">
-        <h1 className="text-2xl font-bold mb-6">Patient Records</h1>
+        {/* Header row: title + export button (clean spacing) */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+          <h1 className="text-2xl font-bold">Patient Records</h1>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full sm:w-auto"
+            onClick={handleExportLast50Patients}
+            disabled={exporting}
+          >
+            {exporting ? "Exporting…" : "Export last 50 (CSV)"}
+          </Button>
+        </div>
 
         {patients.length === 0 ? (
           <p className="text-gray-500 text-center">No patient records found.</p>

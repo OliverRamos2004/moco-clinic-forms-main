@@ -169,7 +169,7 @@ export const MedicalHistoryTab = ({ formData, updateFormData }: any) => {
             onClick={addPastHistory}
             className="w-full"
           >
-            + {t("medical.addPast")}
+            + {<label>Add Entry</label>}
           </Button>
         </CardContent>
       </Card>

@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const LifestyleTab = ({ formData, updateFormData }: any) => {
   const { t } = useTranslation();
@@ -466,11 +467,19 @@ export const LifestyleTab = ({ formData, updateFormData }: any) => {
             </div>
           </div>
 
-          <div>
-            <Label>{t("insurance.signature")}</Label>
-            <div className="border border-border rounded-md p-4 bg-secondary/20 text-center text-sm text-muted-foreground">
-              Digital signature area
-            </div>
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="signature_confirmed"
+              checked={!!formData.signature_confirmed}
+              onCheckedChange={(checked) =>
+                updateFormData({ signature_confirmed: checked === true })
+              }
+            />
+            <label htmlFor="signature_confirmed" className="text-sm leading-5">
+              I affirm that the information provided in this application is true
+              and accurate to the best of my knowledge. I understand this serves
+              as my electronic signature.
+            </label>
           </div>
         </CardContent>
       </Card>
