@@ -41,12 +41,69 @@ export const PatientsList = () => {
   const [selectedPatient, setSelectedPatient] = useState<Person | null>(null);
   const [exporting, setExporting] = useState(false);
 
+  // ✅ Helper: escape CSV values safely
+  const csvCell = (v: any) => {
+    if (v === null || v === undefined) return "";
+    return `"${String(v).replace(/"/g, '""')}"`;
+  };
+
+  // ✅ Helper: flatten one patient into one CSV row object
+  const buildLast50ExportRow = (p: any) => {
+    const addr = p.address?.[0] ?? null;
+    const app = p.application?.[0] ?? null;
+    const intake = app?.intake?.[0] ?? null;
+
+    // optional: build a single address string (keeps your original style)
+    const addressString = addr
+      ? `${addr.street || ""}, ${addr.city || ""}, ${addr.state || ""} ${
+          addr.zip || ""
+        }`.trim()
+      : "";
+
+    const hasInsurance =
+      app?.has_health_insurance === true
+        ? "Yes"
+        : app?.has_health_insurance === false
+        ? "No"
+        : "";
+
+    return {
+      person_id: p.person_id ?? "",
+      first_name: p.legal_first_name ?? "",
+      last_name: p.legal_last_name ?? "",
+      preferred_name: p.preferred_name ?? "",
+      date_of_birth: p.date_of_birth ?? "",
+      sex_at_birth: p.sex_at_birth ?? "",
+      phone: p.phone ?? "",
+      email: p.email ?? "",
+      address: addressString,
+
+      has_health_insurance: hasInsurance,
+      montgomery_resident:
+        app?.montgomery_resident === true
+          ? "Yes"
+          : app?.montgomery_resident === false
+          ? "No"
+          : "",
+
+      signature_name: app?.signature_name ?? "",
+      signature_date: app?.signature_date ?? "",
+
+      // Intake fields (safe)
+      main_reason_for_visit: intake?.main_reason_for_visit ?? "",
+      other_concerns: intake?.other_concerns ?? "",
+      preferred_pharmacy: intake?.preferred_pharmacy ?? "",
+      pharmacy_phone: intake?.pharmacy_phone ?? "",
+      immunizations_current: intake?.immunizations_current ?? "",
+    };
+  };
+
   const handleExportLast50Patients = async () => {
     try {
       if (!window.confirm("Export last 50 patient records as CSV?")) return;
       setExporting(true);
 
-      // 1) Fetch latest 50 patients with address + insurance
+      // 1) Fetch latest 50 patients with address + application + intake
       const { data, error } = await supabase
         .from("person")
         .select(
@@ -54,17 +111,34 @@ export const PatientsList = () => {
         person_id,
         legal_first_name,
         legal_last_name,
+        preferred_name,
         date_of_birth,
+        sex_at_birth,
         phone,
         email,
+
         address:address!address_person_id_fkey (
           street,
           city,
           state,
           zip
         ),
+
         application:application!application_applicant_id_fkey (
-          has_health_insurance
+          application_id,
+          montgomery_resident,
+          has_health_insurance,
+          signature_name,
+          signature_date,
+
+          intake:intake!intake_application_id_fkey (
+            intake_id,
+            main_reason_for_visit,
+            other_concerns,
+            preferred_pharmacy,
+            pharmacy_phone,
+            immunizations_current
+          )
         )
       `
         )
@@ -82,52 +156,36 @@ export const PatientsList = () => {
         return;
       }
 
-      // 2) CSV headers
+      // 2) CSV headers (must match keys returned by buildLast50ExportRow)
       const headers = [
         "person_id",
         "first_name",
         "last_name",
+        "preferred_name",
         "date_of_birth",
+        "sex_at_birth",
         "phone",
         "email",
         "address",
         "has_health_insurance",
+        "montgomery_resident",
+        "signature_name",
+        "signature_date",
+        "main_reason_for_visit",
+        "other_concerns",
+        "preferred_pharmacy",
+        "pharmacy_phone",
+        "immunizations_current",
       ];
 
       const rows: string[] = [];
       rows.push(headers.join(",")); // header row
 
-      // 3) Build each row
-      for (const row of data as any[]) {
-        const addrObj = row.address?.[0] || null;
-        const addressString = addrObj
-          ? `${addrObj.street || ""}, ${addrObj.city || ""}, ${
-              addrObj.state || ""
-            } ${addrObj.zip || ""}`.trim()
-          : "";
+      // 3) Build each row using helper
+      for (const p of data as any[]) {
+        const flat = buildLast50ExportRow(p);
 
-        const appObj = row.application?.[0] || null;
-        const hasInsurance =
-          appObj?.has_health_insurance === true
-            ? "Yes"
-            : appObj?.has_health_insurance === false
-            ? "No"
-            : "";
-
-        const values = [
-          row.person_id,
-          row.legal_first_name,
-          row.legal_last_name,
-          row.date_of_birth,
-          row.phone,
-          row.email,
-          addressString,
-          hasInsurance,
-        ].map((v) => {
-          if (v === null || v === undefined) return "";
-          return `"${String(v).replace(/"/g, '""')}"`;
-        });
-
+        const values = headers.map((h) => csvCell((flat as any)[h]));
         rows.push(values.join(","));
       }
 
