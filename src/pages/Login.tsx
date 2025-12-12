@@ -41,6 +41,29 @@ const Login: React.FC = () => {
     navigate(from, { replace: true });
   };
 
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetting, setResetting] = useState(false);
+
+  const handleResetPassword = async () => {
+    try {
+      if (!email) return alert("Enter your email first.");
+      setResetting(true);
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      alert("Password reset email sent. Check inbox (and spam).");
+    } catch (e: any) {
+      console.error(e);
+      alert(e.message || "Error sending reset email.");
+    } finally {
+      setResetting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md shadow-lg">
@@ -49,6 +72,7 @@ const Login: React.FC = () => {
             Staff Login – MCFC
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
@@ -83,6 +107,18 @@ const Login: React.FC = () => {
               {submitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+
+          {/* 🔐 Password reset */}
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={handleResetPassword}
+              className="text-sm text-blue-600 hover:underline"
+              disabled={submitting}
+            >
+              Forgot password?
+            </button>
+          </div>
 
           <p className="text-xs text-muted-foreground mt-4 text-center">
             For clinic staff use only.

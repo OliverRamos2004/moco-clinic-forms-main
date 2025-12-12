@@ -16,6 +16,7 @@ import { supabase } from "./lib/supabaseClient";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,8 @@ const App = () => {
 
               {/* Public – staff login */}
               <Route path="/login" element={<Login />} />
+
+              <Route path="/reset-password" element={<ResetPassword />} />
 
               {/* Protected – staff-only pages */}
               <Route
