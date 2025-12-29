@@ -485,7 +485,7 @@ export const PatientDetails = () => {
       setNutrition(null);
       setSocial(null);
 
-      // 1) Fetch person + applications + intakes + other nested stuff
+      // Fetch person + applications + intakes + other nested data
       const { data, error } = await supabase
         .from("person")
         .select(
@@ -746,14 +746,6 @@ export const PatientDetails = () => {
     downloadCsv(`patient_${data.person_id}.csv`, row);
   };
 
-  // STEP 2: Extract nested data
-
-  // Pick the *latest* application and intake rather than the first one
-  // STEP 2: Extract nested data (always use the *latest* application + intake)
-
-  // 1) Latest application
-  // STEP 2: Extract nested data (for everything except nutrition + social)
-
   const applications = Array.isArray(data.application) ? data.application : [];
   const sortedApps = applications
     .slice()
@@ -839,9 +831,6 @@ export const PatientDetails = () => {
             {data.legal_last_name}
           </p>
           <p>
-            <strong>Preferred Name:</strong> {data.preferred_name || "—"}
-          </p>
-          <p>
             <strong>DOB:</strong> {data.date_of_birth}
           </p>
           <p>
@@ -889,9 +878,6 @@ export const PatientDetails = () => {
           <p>
             <strong>Health Insurance:</strong>{" "}
             {app?.has_health_insurance ? "Yes" : "No"}
-          </p>
-          <p>
-            <strong>Last 4 SSN:</strong> {app?.last4_ssn || "—"}
           </p>
           <p>
             <strong>Signature:</strong> {app?.signature_name || "—"}

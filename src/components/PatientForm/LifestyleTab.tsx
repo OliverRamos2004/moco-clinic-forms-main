@@ -197,7 +197,9 @@ export const LifestyleTab = ({ formData, updateFormData }: any) => {
 
           {/* Types */}
           <div>
-            <Label className="text-sm font-semibold">Type:</Label>
+            <Label className="text-sm font-semibold">
+              Type of Tobacco (Per day):
+            </Label>
             <div className="grid grid-cols-3 gap-3 mt-2">
               <Input
                 placeholder={t("social.cigarettes")}
@@ -213,6 +215,11 @@ export const LifestyleTab = ({ formData, updateFormData }: any) => {
                 placeholder={t("social.chew")}
                 value={formData.chew || ""}
                 onChange={(e) => updateFormData({ chew: e.target.value })}
+              />
+              <Input
+                placeholder={t("social.vape")}
+                value={formData.vape || ""}
+                onChange={(e) => updateFormData({ vape: e.target.value })}
               />
             </div>
           </div>

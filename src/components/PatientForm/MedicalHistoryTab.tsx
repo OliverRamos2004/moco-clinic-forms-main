@@ -36,7 +36,7 @@ const medicalConditions = [
   "Coronary Artery Disease",
   "Hiatal Hernia or Reflux Disease",
   "Pulmonary Embolism",
-  "Glaucophobia",
+  "Glaucoma",
   "HIV or AIDS",
   "Reflux or Ulcers",
   "Diabetes - Insulin",

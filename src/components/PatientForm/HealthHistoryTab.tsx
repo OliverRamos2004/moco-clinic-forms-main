@@ -191,7 +191,9 @@ export const HealthHistoryTab = ({
       {/* Current Medications */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-primary">Current Medications</CardTitle>
+          <CardTitle className="text-primary">
+            {t("health.medications")}
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -201,7 +203,7 @@ export const HealthHistoryTab = ({
               className="p-4 border rounded-lg bg-gray-50 space-y-2"
             >
               <div className="flex justify-between items-center">
-                <Label className="font-semibold">Medication</Label>
+                <Label className="font-semibold">{t("health.drug")}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -214,7 +216,7 @@ export const HealthHistoryTab = ({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <Input
-                  placeholder="Name"
+                  placeholder={t("health.drug")}
                   value={med.drug_name}
                   onChange={(e) =>
                     updateMedication(med.id, "drug_name", e.target.value)
@@ -222,7 +224,7 @@ export const HealthHistoryTab = ({
                 />
 
                 <Input
-                  placeholder="Strength"
+                  placeholder={t("health.strength")}
                   value={med.strength}
                   onChange={(e) =>
                     updateMedication(med.id, "strength", e.target.value)
@@ -230,7 +232,7 @@ export const HealthHistoryTab = ({
                 />
 
                 <Input
-                  placeholder="Frequency"
+                  placeholder={t("health.frequency")}
                   value={med.frequency}
                   onChange={(e) =>
                     updateMedication(med.id, "frequency", e.target.value)
@@ -247,7 +249,7 @@ export const HealthHistoryTab = ({
             className="w-full"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Medication
+            {t("health.addMedication")}
           </Button>
         </CardContent>
       </Card>

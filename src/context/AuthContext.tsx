@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1️⃣ On mount, check if there is a current session
+    // On mount, check if there is a current session
     const getUser = async () => {
       const {
         data: { session },
@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     getUser();
 
-    // 2️⃣ Listen for auth state changes (login/logout)
+    // Listen for auth state changes (login/logout)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {

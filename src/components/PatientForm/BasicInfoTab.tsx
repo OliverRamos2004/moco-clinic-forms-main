@@ -11,7 +11,9 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-primary">{t("basicInfo.adult")}</CardTitle>
+          <CardTitle className="text-primary">
+            {t("basicInfo.patient")}
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -69,7 +71,7 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
 
           {/* EMAIL */}
           <div>
-            <Label>Email</Label>
+            <Label>{t("basicInfo.email")}</Label>
             <Input
               type="email"
               value={formData.email || ""}
@@ -99,7 +101,7 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
           </div>
 
           <div>
-            <Label>State</Label>
+            <Label>{t("basicInfo.state")}</Label>
             <Input
               type="text"
               value={formData.state || ""}
@@ -114,18 +116,6 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
               type="text"
               value={formData.zip || ""}
               onChange={(e) => updateFormData({ zip: e.target.value })}
-              required
-            />
-          </div>
-
-          {/* LAST 4 SSN */}
-          <div>
-            <Label>{t("basicInfo.ssn")}</Label>
-            <Input
-              type="text"
-              maxLength={4}
-              value={formData.last4_ssn || ""}
-              onChange={(e) => updateFormData({ last4_ssn: e.target.value })}
               required
             />
           </div>
@@ -194,7 +184,7 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Emergency Contacts</CardTitle>
+          <CardTitle>{t("basicInfo.emergency")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {[1, 2].map((i) => (
@@ -202,10 +192,12 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
               key={i}
               className="border rounded-md p-4 space-y-3 bg-muted/30"
             >
-              <p className="font-semibold text-sm">Contact {i}</p>
+              <p className="font-semibold text-sm">
+                {t("basicInfo.emergency")} {i}
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label>Name</Label>
+                  <Label>{t("basicInfo.emergencyName")}</Label>
                   <Input
                     value={formData[`emergency${i}_name`] || ""}
                     onChange={(e) =>
@@ -216,7 +208,7 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
                   />
                 </div>
                 <div>
-                  <Label>Relationship</Label>
+                  <Label>{t("basicInfo.relationship")}</Label>
                   <Input
                     value={formData[`emergency${i}_relationship`] || ""}
                     onChange={(e) =>
@@ -227,7 +219,7 @@ export const BasicInfoTab = ({ formData, updateFormData }: any) => {
                   />
                 </div>
                 <div>
-                  <Label>Phone</Label>
+                  <Label>{t("basicInfo.phone")}</Label>
                   <Input
                     value={formData[`emergency${i}_phone`] || ""}
                     onChange={(e) =>

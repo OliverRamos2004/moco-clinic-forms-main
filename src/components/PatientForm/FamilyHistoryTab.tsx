@@ -9,13 +9,13 @@ import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
 const relations = [
-  "Children",
-  "Grandfather (paternal)",
-  "Grandfather (maternal)",
-  "Grandmother (paternal)",
-  "Grandmother (maternal)",
-  "Father",
-  "Mother",
+  "children",
+  "grandfather (paternal)",
+  "grandfather (maternal)",
+  "grandmother (paternal)",
+  "grandmother (maternal)",
+  "father",
+  "mother",
   "Brother/Sister",
 ];
 
@@ -120,6 +120,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
     "genitalWarts",
     "hiv",
     "hepBC",
+    "syphilis",
   ];
 
   const stiInterest: string[] = Array.isArray(formData.sti_interest)
@@ -156,7 +157,10 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
               key={entry.id}
               className="p-4 border border-border rounded-lg space-y-3"
             >
-              <Label className="font-semibold">{entry.relation}</Label>
+              <Label className="font-semibold">
+                {t(`family.relations.${entry.relation}`)}
+              </Label>
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
                 {/* Alive radio */}
                 <div>
@@ -179,7 +183,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
                         htmlFor={`${entry.id}-alive-yes`}
                         className="font-normal text-sm"
                       >
-                        Y
+                        {t("family.y")}
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -188,7 +192,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
                         htmlFor={`${entry.id}-alive-no`}
                         className="font-normal text-sm"
                       >
-                        N
+                        {t("family.n")}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -250,7 +254,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
               className="p-4 border border-border rounded-lg space-y-3"
             >
               <div className="flex justify-between items-center">
-                <Label className="font-semibold">Family Member</Label>
+                <Label className="font-semibold">{t("family.member")}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -284,7 +288,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
                 {/* Alive */}
                 <div>
                   <Label className="text-xs text-muted-foreground">
-                    {t("family.alive") || "Alive"}
+                    {t("family.alive")}
                   </Label>
                   <RadioGroup
                     className="flex gap-4 mt-1"
@@ -302,7 +306,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
                         htmlFor={`member-${entry.id}-alive-yes`}
                         className="font-normal text-sm"
                       >
-                        Y
+                        {t("family.y")}
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -314,7 +318,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
                         htmlFor={`member-${entry.id}-alive-no`}
                         className="font-normal text-sm"
                       >
-                        N
+                        {t("family.n")}
                       </Label>
                     </div>
                   </RadioGroup>

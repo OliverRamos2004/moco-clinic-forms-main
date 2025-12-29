@@ -17,11 +17,15 @@ import { Link } from "react-router-dom";
 const safeInt = (value: any) => {
   if (!value) return null; // empty string, undefined, null → NULL in DB
   const n = parseInt(value);
-  return isNaN(n) ? null : n; // "60 oz" → null
+  return isNaN(n) ? null : n;
 };
 
+// Helper to convert "yes" | "no" | "dont_know" to boolean or null
 const yesNoToBool = (value?: string | null) =>
   value === "yes" ? true : value === "no" ? false : null;
+
+// Helper to normalize strings for comparison
+const normalize = (s: string) => (s ? s.trim().toLowerCase() : "");
 
 export const PatientForm = () => {
   const { t } = useTranslation();
@@ -35,7 +39,6 @@ export const PatientForm = () => {
     street: "",
     city: "",
     zip: "",
-    last4_ssn: "",
     has_health_insurance: null, // boolean
     montgomery_resident: null, // boolean
 
@@ -152,7 +155,7 @@ export const PatientForm = () => {
       if (addressError) throw addressError;
 
       // ---------------------------
-      // EMERGENCY CONTACTS (optional)
+      // EMERGENCY CONTACTS
       // ---------------------------
 
       const emergencyContactsPayload = [
@@ -197,7 +200,6 @@ export const PatientForm = () => {
               formData.has_health_insurance === true ? true : false,
             montgomery_resident:
               formData.montgomery_resident === true ? true : false,
-            last4_ssn: formData.last4_ssn || null,
           },
         ])
         .select("application_id")
@@ -320,7 +322,7 @@ export const PatientForm = () => {
         cigars_per_day: safeInt(formData.cigars),
         chew_per_day: safeInt(formData.chew),
         // (you have vape_per_day in the schema, but no UI field yet, so we leave it null)
-        vape_per_day: null,
+        vape_per_day: formData.vape ? safeInt(formData.vape) : null,
 
         tobacco_started_age: safeInt(formData.smoking_start_age),
         tobacco_ever: yesNoToBool(formData.quit_tobacco),
@@ -611,8 +613,6 @@ export const PatientForm = () => {
             .select("problem_id, name");
 
         if (problemLookupError) throw problemLookupError;
-
-        const normalize = (s: string) => (s ? s.trim().toLowerCase() : "");
 
         const lookupByName = new Map<string, number>(
           (problemLookup || []).map((row: any) => [

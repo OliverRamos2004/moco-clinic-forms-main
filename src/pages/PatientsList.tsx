@@ -432,10 +432,6 @@ export const PatientsList = () => {
                         ? "Yes"
                         : "No"}
                     </p>
-                    <p>
-                      <span className="font-semibold">Last 4 SSN:</span>{" "}
-                      {selectedPatient.application[0].last4_ssn || "—"}
-                    </p>
                   </div>
                 ) : (
                   <p>No application information available</p>
