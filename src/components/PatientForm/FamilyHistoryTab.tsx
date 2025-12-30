@@ -10,14 +10,42 @@ import { useState } from "react";
 
 const relations = [
   "children",
-  "grandfather (paternal)",
-  "grandfather (maternal)",
-  "grandmother (paternal)",
-  "grandmother (maternal)",
+  "grandfather_paternal",
+  "grandfather_maternal",
+  "grandmother_paternal",
+  "grandmother_maternal",
   "father",
   "mother",
-  "Brother/Sister",
+  "sibling",
 ];
+const normalizeRelation = (rel: string) => {
+  const r = (rel || "").trim().toLowerCase();
+
+  const map: Record<string, string> = {
+    children: "children",
+    father: "father",
+    mother: "mother",
+    sibling: "sibling",
+    "brother/sister": "sibling",
+    "brother / sister": "sibling",
+
+    "grandfather (paternal)": "grandfather_paternal",
+    "grandfather (maternal)": "grandfather_maternal",
+    "grandmother (paternal)": "grandmother_paternal",
+    "grandmother (maternal)": "grandmother_maternal",
+
+    // allow already-correct keys
+    grandfather_paternal: "grandfather_paternal",
+    grandfather_maternal: "grandfather_maternal",
+    grandmother_paternal: "grandmother_paternal",
+    grandmother_maternal: "grandmother_maternal",
+  };
+
+  return map[r] ?? rel;
+};
+
+const isDefaultRelation = (rel: string) =>
+  relations.includes(normalizeRelation(rel));
 
 const healthProblems = [
   "addictions",
@@ -47,9 +75,17 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
   const initialEntries: FamilyEntry[] =
     Array.isArray(formData.familyHistoryEntries) &&
     formData.familyHistoryEntries.length > 0
-      ? formData.familyHistoryEntries
+      ? formData.familyHistoryEntries.map((e: FamilyEntry) => {
+          const normalized = normalizeRelation(e.relation);
+          return {
+            ...e,
+            relation: normalized,
+            // if it's a default relation, force a stable id (prevents duplicates/weird grouping)
+            id: relations.includes(normalized) ? normalized : e.id,
+          };
+        })
       : relations.map((rel) => ({
-          id: rel, // stable id for default relations
+          id: rel,
           relation: rel,
           alive: "",
           age: "",
@@ -110,8 +146,8 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
     syncEntries(updated);
   };
 
-  const defaultEntries = entries.filter((e) => relations.includes(e.relation));
-  const extraEntries = entries.filter((e) => !relations.includes(e.relation));
+  const defaultEntries = entries.filter((e) => isDefaultRelation(e.relation));
+  const extraEntries = entries.filter((e) => !isDefaultRelation(e.relation));
 
   const stiOptions = [
     "gonorrhea",
@@ -141,6 +177,8 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
     updateFormData({ sti_interest: next });
   };
 
+  console.log("familyHistoryEntries (raw):", formData.familyHistoryEntries);
+
   return (
     <div className="space-y-6">
       {/* FAMILY HISTORY */}
@@ -158,7 +196,7 @@ export const FamilyHistoryTab = ({ formData, updateFormData }: any) => {
               className="p-4 border border-border rounded-lg space-y-3"
             >
               <Label className="font-semibold">
-                {t(`family.relations.${entry.relation}`)}
+                {t(`family.relations.${normalizeRelation(entry.relation)}`)}
               </Label>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">

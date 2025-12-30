@@ -125,7 +125,7 @@ export const MedicalHistoryTab = ({ formData, updateFormData }: any) => {
               className="p-4 border border-border rounded-lg space-y-3"
             >
               <div className="flex justify-between items-center">
-                <Label className="font-semibold">Entry</Label>
+                <Label className="font-semibold">{t("medical.past")}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -169,7 +169,7 @@ export const MedicalHistoryTab = ({ formData, updateFormData }: any) => {
             onClick={addPastHistory}
             className="w-full"
           >
-            + {<label>Add Entry</label>}
+            + {<label>{t("medical.addEntry")}</label>}
           </Button>
         </CardContent>
       </Card>
@@ -188,7 +188,9 @@ export const MedicalHistoryTab = ({ formData, updateFormData }: any) => {
               className="p-4 border border-border rounded-lg space-y-3"
             >
               <div className="flex justify-between items-center">
-                <Label className="font-semibold">Visit</Label>
+                <Label className="font-semibold">
+                  {t("medical.visitReason")}
+                </Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -599,7 +601,7 @@ export const MedicalHistoryTab = ({ formData, updateFormData }: any) => {
             <div>
               <Label>
                 {tt(
-                  "genderSpecific.partnerUsesCondom",
+                  "genderSpecific.partnerUsesCondoms",
                   "Does your partner use condoms?"
                 )}
               </Label>
@@ -643,7 +645,7 @@ export const MedicalHistoryTab = ({ formData, updateFormData }: any) => {
             <div>
               <Label>
                 {tt(
-                  "genderSpecific.otherBirthControl",
+                  "genderSpecific.birthControl",
                   "Other birth control method (if any)"
                 )}
               </Label>
